@@ -9,13 +9,14 @@ namespace Gridly
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Matrix camScale;
 
+        MainState state;
         float synapseInterval = 0.5f;
         float remainingDelay = 0f;
         MouseState prevMouseState;
 
         List<Neuron> neurons;
+        Neuron connectFrom;
 
         public MainScene()
         {
@@ -30,7 +31,7 @@ namespace Gridly
             graphics.PreferredBackBufferHeight = 1080;
             graphics.ApplyChanges();
 
-            camScale = Matrix.CreateScale(2);
+            state = MainState.IDEAL;
             neurons = new List<Neuron>();
             base.Initialize();
         }
@@ -64,20 +65,63 @@ namespace Gridly
 
             var mouse = Mouse.GetState();
 
+            if (mouse.RightButton == ButtonState.Pressed
+                && prevMouseState.RightButton == ButtonState.Released)
+            {
+                if (!IsNeuronOnMouse(out var _))
+                    neurons.Add(new Neuron(mouse.Position.ToVector2()));
+            }
+
             if (mouse.LeftButton == ButtonState.Pressed
                 && prevMouseState.LeftButton == ButtonState.Released)
-                neurons.Add(new Neuron(mouse.Position.ToVector2() / 2));
+            {
+                if (IsNeuronOnMouse(out var n))
+                {
+                    if (state == MainState.IDEAL)
+                    {
+                        connectFrom = n;
+                        state = MainState.NEURON_CONNECTING;
+                    }
+                    else if (state == MainState.NEURON_CONNECTING)
+                    {
+                        connectFrom.ConnectTo(n);
+                        connectFrom = null;
+                        state = MainState.IDEAL;
+                    }
+                }
+            }
 
             prevMouseState = mouse;
 
             base.Update(gameTime);
         }
 
+        private bool IsNeuronOnMouse(out Neuron neuron)
+        {
+            var mouse = Mouse.GetState();
+            foreach (var n in neurons)
+            {
+                if (n.GetBounds().Contains(mouse.Position))
+                {
+                    neuron = n;
+                    return true;
+                }
+            }
+            neuron = null;
+            return false;
+        }
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin(transformMatrix: camScale);
+            spriteBatch.Begin();
+
+            if (state == MainState.NEURON_CONNECTING)
+            {
+                GUI.DrawLine(spriteBatch, connectFrom.Position, Mouse.GetState().Position.ToVector2(), 1f, Color.Blue);
+            }
+
             foreach (var n in neurons)
                 n.Draw(spriteBatch);
             spriteBatch.End();

@@ -41,7 +41,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GUI.cs" />
     <Compile Include="MainScene.cs" />
+    <Compile Include="MainState.cs" />
     <Compile Include="Neuron.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
