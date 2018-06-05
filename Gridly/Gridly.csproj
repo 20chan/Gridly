@@ -41,6 +41,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Geometry.cs" />
     <Compile Include="GUI.cs" />
     <Compile Include="MainScene.cs" />
     <Compile Include="MainState.cs" />

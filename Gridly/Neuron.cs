@@ -67,6 +67,14 @@ namespace Gridly
                 connecting.Remove(n);
         }
 
+        public void DisconnectIntersection(Vector2 p1, Vector2 p2)
+        {
+            var clone = connecting.ToArray();
+            foreach (var n in clone)
+                if (Geometry.IsTwoSegmentsInstersect(Position, n.Position, p1, p2))
+                    connecting.Remove(n);
+        }
+
         public void Activate()
         {
             shouldActivate = true;

@@ -22,6 +22,7 @@ namespace Gridly
         List<Neuron> neurons;
         Neuron connectFrom;
         Neuron dragging;
+        Vector2 disconnectFrom;
 
         public MainScene()
         {
@@ -109,6 +110,10 @@ namespace Gridly
             {
                 GUI.DrawLine(spriteBatch, connectFrom.Position, curtMousePos, 1f, Color.Blue);
             }
+            else if (state == MainState.NEURON_DISCONNECTING)
+            {
+                GUI.DrawLine(spriteBatch, disconnectFrom, curtMousePos, 1f, Color.Red);
+            }
 
             foreach (var n in neurons)
                 n.Draw(spriteBatch);
@@ -127,12 +132,33 @@ namespace Gridly
 
             if (IsLeftMouseDown())
             {
-                if (state == MainState.IDEAL)
-                    if (IsNeuronOnPos(curtMousePos, out var n))
+                if (IsNeuronOnPos(curtMousePos, out var n))
+                {
+                    if (state == MainState.IDEAL)
                     {
-                        dragging = n;
-                        state = MainState.NEURON_DRAGGING;
+                        if (IsKeyPressing(Keys.LeftShift))
+                        {
+                            connectFrom = n;
+                            state = MainState.NEURON_CONNECTING;
+                        }
+                        else
+                        {
+                            dragging = n;
+                            state = MainState.NEURON_DRAGGING;
+                        }
                     }
+                    else if (state == MainState.NEURON_CONNECTING)
+                    {
+                        connectFrom.ConnectTo(n);
+                        connectFrom = null;
+                        state = MainState.IDEAL;
+                    }
+                }
+                else if (IsKeyPressing(Keys.LeftControl))
+                {
+                    disconnectFrom = curtMousePos;
+                    state = MainState.NEURON_DISCONNECTING;
+                }
             }
 
             if (state == MainState.NEURON_DRAGGING)
@@ -147,23 +173,10 @@ namespace Gridly
                     dragging = null;
                     state = MainState.IDEAL;
                 }
-            }
-
-            if (IsKeyDown(Keys.LeftShift))
-            {
-                if (IsNeuronOnPos(curtMousePos, out var n))
+                else if (state == MainState.NEURON_DISCONNECTING)
                 {
-                    if (state == MainState.IDEAL)
-                    {
-                        connectFrom = n;
-                        state = MainState.NEURON_CONNECTING;
-                    }
-                    else if (state == MainState.NEURON_CONNECTING)
-                    {
-                        connectFrom.ConnectTo(n);
-                        connectFrom = null;
-                        state = MainState.IDEAL;
-                    }
+                    DisconnectIntersection(disconnectFrom, curtMousePos);
+                    state = MainState.IDEAL;
                 }
             }
 
@@ -189,6 +202,12 @@ namespace Gridly
             neurons.Remove(n);
         }
 
+        private void DisconnectIntersection(Vector2 from, Vector2 to)
+        {
+            foreach (var n in neurons)
+                n.DisconnectIntersection(from, to);
+        }
+
         private void TickSynapse()
         {
             foreach (var n in neurons)
@@ -199,6 +218,12 @@ namespace Gridly
 
         private bool IsKeyDown(Keys key)
             => curKeyState.IsKeyDown(key) && prevKeyState.IsKeyUp(key);
+
+        private bool IsKeyPressing(Keys key)
+            => curKeyState.IsKeyDown(key);
+
+        private bool IsKeyUp(Keys key)
+            => curKeyState.IsKeyUp(key) && prevKeyState.IsKeyDown(key);
 
         private bool IsLeftMouseDown()
             => curMouseState.LeftButton == ButtonState.Pressed
