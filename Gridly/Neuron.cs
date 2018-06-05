@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -45,11 +46,18 @@ namespace Gridly
         {
             foreach (var n in connecting)
             {
+                GUI.DrawLine(sb, Position, n.Position, 2f, Color.Blue, 0.5f);
+            }
+        }
+
+        public void DrawUpperSynapse(SpriteBatch sb)
+        {
+            foreach (var n in connecting)
+            {
                 var ratio80 = new Vector2(
                     .2f * Position.X + .8f * n.Position.X,
                     .2f * Position.Y + .8f * n.Position.Y);
-                GUI.DrawLine(sb, Position, n.Position, 2f, Color.Blue);
-                GUI.DrawLine(sb, ratio80, n.Position, 2f, Color.Gray);
+                GUI.DrawLine(sb, ratio80, n.Position, 2f, Color.Gray, 0.3f);
             }
         }
 

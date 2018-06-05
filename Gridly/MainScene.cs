@@ -118,6 +118,8 @@ namespace Gridly
             foreach (var n in neurons)
                 n.DrawSynapse(spriteBatch);
             foreach (var n in neurons)
+                n.DrawUpperSynapse(spriteBatch);
+            foreach (var n in neurons)
                 n.Draw(spriteBatch);
             spriteBatch.End();
 
