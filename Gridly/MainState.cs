@@ -4,5 +4,6 @@
     {
         IDEAL,
         NEURON_CONNECTING,
+        NEURON_DRAGGING,
     }
 }

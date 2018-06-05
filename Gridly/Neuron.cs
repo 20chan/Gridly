@@ -6,7 +6,7 @@ namespace Gridly
 {
     public class Neuron
     {
-        public Vector2 Position { get; private set; }
+        public Vector2 Position { get; set; }
         private static Vector2 Origin = Resources.NeuronTexture.Bounds.Size.ToVector2() / 2;
 
         private List<Neuron> connecting;

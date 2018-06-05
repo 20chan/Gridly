@@ -20,6 +20,7 @@ namespace Gridly
 
         List<Neuron> neurons;
         Neuron connectFrom;
+        Neuron dragging;
 
         public MainScene()
         {
@@ -117,15 +118,37 @@ namespace Gridly
 
         private void UpdateNeuronInput()
         {
-            if (curMouseState.RightButton == ButtonState.Pressed
-                && prevMouseState.RightButton == ButtonState.Released)
+            if (IsRightMouseDown())
             {
                 if (!IsNeuronOnPos(curtMousePos, out var _))
                     neurons.Add(new Neuron(curtMousePos));
             }
 
-            if (curMouseState.LeftButton == ButtonState.Pressed
-                && prevMouseState.LeftButton == ButtonState.Released)
+            if (IsLeftMouseDown())
+            {
+                if (state == MainState.IDEAL)
+                    if (IsNeuronOnPos(curtMousePos, out var n))
+                    {
+                        dragging = n;
+                        state = MainState.NEURON_DRAGGING;
+                    }
+            }
+
+            if (state == MainState.NEURON_DRAGGING)
+            {
+                dragging.Position = curtMousePos;
+            }
+            
+            if (IsLeftMouseUp())
+            {
+                if (state == MainState.NEURON_DRAGGING)
+                {
+                    dragging = null;
+                    state = MainState.IDEAL;
+                }
+            }
+
+            if (IsKeyDown(Keys.LeftShift))
             {
                 if (IsNeuronOnPos(curtMousePos, out var n))
                 {
@@ -143,8 +166,7 @@ namespace Gridly
                 }
             }
 
-            if (curKeyState.IsKeyDown(Keys.Space)
-                && prevKeyState.IsKeyUp(Keys.Space))
+            if (IsKeyDown(Keys.Space))
             {
                 if (IsNeuronOnPos(curtMousePos, out var n))
                 {
@@ -160,5 +182,30 @@ namespace Gridly
             foreach (var n in neurons)
                 n.UpdateState();
         }
+
+        private bool IsKeyDown(Keys key)
+            => curKeyState.IsKeyDown(key) && prevKeyState.IsKeyUp(key);
+
+        private bool IsLeftMouseDown()
+            => curMouseState.LeftButton == ButtonState.Pressed
+            && prevMouseState.LeftButton == ButtonState.Released;
+
+        private bool IsLeftMousePressing()
+            => curMouseState.LeftButton == ButtonState.Pressed;
+
+        private bool IsLeftMouseUp()
+            => curMouseState.LeftButton == ButtonState.Released
+            && prevMouseState.LeftButton == ButtonState.Pressed;
+
+        private bool IsRightMouseDown()
+            => curMouseState.RightButton == ButtonState.Pressed
+            && prevMouseState.RightButton == ButtonState.Released;
+
+        private bool IsRightMousePressing()
+            => curMouseState.RightButton == ButtonState.Pressed;
+
+        private bool IsRightMouseUp()
+            => curMouseState.RightButton == ButtonState.Released
+            && prevMouseState.RightButton == ButtonState.Pressed;
     }
 }
