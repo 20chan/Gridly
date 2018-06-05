@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Geometry.cs" />
     <Compile Include="GUI.cs" />
+    <Compile Include="Collidable.cs" />
     <Compile Include="MainScene.cs" />
     <Compile Include="MainState.cs" />
     <Compile Include="Neuron.cs" />

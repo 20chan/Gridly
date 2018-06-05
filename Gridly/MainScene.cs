@@ -79,12 +79,19 @@ namespace Gridly
             curKeyState = Keyboard.GetState();
 
             UpdateNeuronInput();
+            UpdatePhysics();
             
             prevMousePos = posVec;
             prevMouseState = curMouseState;
             prevKeyState = curKeyState;
 
             base.Update(gameTime);
+        }
+
+        private void UpdatePhysics()
+        {
+            foreach (var n in neurons)
+                n.UpdatePhysics();
         }
 
         private bool IsNeuronOnPos(Vector2 pos, out Neuron neuron)
@@ -176,7 +183,7 @@ namespace Gridly
 
             if (state == MainState.NEURON_DRAGGING)
             {
-                dragging.Position = curtMousePos;
+                dragging.AddForceTo(curtMousePos, 0.3f);
             }
 
             if (state == MainState.NEURON_DISCONNECTING)

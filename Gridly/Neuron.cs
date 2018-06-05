@@ -6,10 +6,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Gridly
 {
-    public class Neuron
+    public class Neuron : Collidable
     {
         public readonly uint ID;
-        public Vector2 Position { get; set; }
         private static Vector2 Origin = Resources.NeuronTexture.Bounds.Size.ToVector2() / 2;
 
         private List<Neuron> connecting;
@@ -25,6 +24,7 @@ namespace Gridly
             connecting = new List<Neuron>();
             couldDisconnected = new List<bool>();
             Activated = false;
+            friction = .7f;
         }
 
         public void UpdateSynapse()
@@ -44,7 +44,7 @@ namespace Gridly
             }
         }
 
-        public Rectangle GetBounds()
+        public override Rectangle GetBounds()
             => new Rectangle((Position - Origin).ToPoint(), Resources.NeuronTexture.Bounds.Size);
 
         public void DrawSynapse(SpriteBatch sb)
