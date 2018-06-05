@@ -10,6 +10,7 @@ namespace Gridly
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Random random;
 
         MainState state;
         float synapseInterval = 0.5f;
@@ -20,6 +21,7 @@ namespace Gridly
         KeyboardState curKeyState, prevKeyState;
         Matrix scale;
 
+        TileMap tilemap;
         List<Neuron> neurons;
         Neuron connectFrom;
         Neuron dragging;
@@ -40,7 +42,9 @@ namespace Gridly
             graphics.ApplyChanges();
 
             state = MainState.IDEAL;
+            random = new Random();
             neurons = new List<Neuron>();
+            tilemap = new TileMap(neurons, 16, 9);
             scale = Matrix.CreateScale(2);
             base.Initialize();
         }
@@ -69,7 +73,9 @@ namespace Gridly
             if (remainingDelay <= 0)
             {
                 TickSynapse();
+                tilemap.TileNeurons();
                 remainingDelay = synapseInterval;
+                Console.WriteLine($"Laggy?: {gameTime.IsRunningSlowly}");
             }
 
             curMouseState = Mouse.GetState();
@@ -79,7 +85,17 @@ namespace Gridly
             curKeyState = Keyboard.GetState();
 
             UpdateNeuronInput();
-            UpdatePhysics();
+            tilemap.UpdatePhysics();
+
+            if (IsKeyDown(Keys.Enter))
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    var x = random.Next(1920);
+                    var y = random.Next(1080);
+                    SpawnNeuron(new Vector2(x, y));
+                }
+            }
             
             prevMousePos = posVec;
             prevMouseState = curMouseState;
@@ -87,13 +103,7 @@ namespace Gridly
 
             base.Update(gameTime);
         }
-
-        private void UpdatePhysics()
-        {
-            foreach (var n in neurons)
-                n.UpdatePhysics();
-        }
-
+        
         private bool IsNeuronOnPos(Vector2 pos, out Neuron neuron)
         {
             foreach (var n in neurons)
@@ -183,7 +193,7 @@ namespace Gridly
 
             if (state == MainState.NEURON_DRAGGING)
             {
-                dragging.AddForceTo(curtMousePos, 0.3f);
+                dragging.AddForceTo(curtMousePos, 0.01f);
             }
 
             if (state == MainState.NEURON_DISCONNECTING)
@@ -224,7 +234,7 @@ namespace Gridly
 
         private void SpawnNeuron(Vector2 position)
         {
-            neurons.Add(new Neuron(curtMousePos, (uint)neurons.Count));
+            neurons.Add(new Neuron(position, (uint)neurons.Count));
         }
 
         private void DeleteNeuron(Neuron n)

@@ -24,7 +24,7 @@ namespace Gridly
             connecting = new List<Neuron>();
             couldDisconnected = new List<bool>();
             Activated = false;
-            friction = .7f;
+            friction = .1f;
         }
 
         public void UpdateSynapse()
