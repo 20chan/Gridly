@@ -14,6 +14,7 @@ namespace Gridly
         MainState state;
         float synapseInterval = 0.5f;
         float remainingDelay = 0f;
+        int tickCount = 0;
         Vector2 curtMousePos, prevMousePos;
         MouseState curMouseState, prevMouseState;
         KeyboardState curKeyState, prevKeyState;
@@ -126,12 +127,20 @@ namespace Gridly
             base.Draw(gameTime);
         }
 
+        private string Log()
+        {
+            var sb = new System.Text.StringBuilder();
+            foreach (var n in neurons)
+                n.Log(sb);
+            return sb.ToString();
+        }
+
         private void UpdateNeuronInput()
         {
             if (IsRightMouseDown())
             {
                 if (!IsNeuronOnPos(curtMousePos, out var _))
-                    neurons.Add(new Neuron(curtMousePos));
+                    SpawnNeuron(curtMousePos);
             }
 
             if (IsLeftMouseDown())
@@ -206,6 +215,11 @@ namespace Gridly
                         DeleteNeuron(n);
         }
 
+        private void SpawnNeuron(Vector2 position)
+        {
+            neurons.Add(new Neuron(curtMousePos, (uint)neurons.Count));
+        }
+
         private void DeleteNeuron(Neuron n)
         {
             foreach (var neu in neurons)
@@ -228,6 +242,8 @@ namespace Gridly
                 n.UpdateSynapse();
             foreach (var n in neurons)
                 n.UpdateState();
+            //Console.WriteLine($"After Tick {tickCount++}");
+            //Console.Write(Log());
         }
 
         private bool IsKeyDown(Keys key)

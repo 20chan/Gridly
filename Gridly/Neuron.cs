@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Text;
+using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,6 +8,7 @@ namespace Gridly
 {
     public class Neuron
     {
+        public readonly uint ID;
         public Vector2 Position { get; set; }
         private static Vector2 Origin = Resources.NeuronTexture.Bounds.Size.ToVector2() / 2;
 
@@ -16,8 +18,9 @@ namespace Gridly
         public bool Activated { get; private set; }
         private bool shouldActivate = false;
 
-        public Neuron(Vector2 pos)
+        public Neuron(Vector2 pos, uint id)
         {
+            ID = id;
             Position = pos;
             connecting = new List<Neuron>();
             couldDisconnected = new List<bool>();
@@ -116,6 +119,17 @@ namespace Gridly
         public void ActivateImmediate()
         {
             Activated = true;
+        }
+
+        public void Log(StringBuilder sb)
+        {
+            sb.AppendLine($"Neuron {ID}");
+            sb.AppendLine($"  Activated: {Activated}");
+            sb.AppendLine($"  ReadyActivate: {shouldActivate}");
+            var cs = connecting.Count == 0
+                ? "None" : string.Join(", ", connecting.Select(c => c.ID));
+            sb.AppendLine($"  Connected Neurons: {cs}");
+            sb.AppendLine();
         }
     }
 }
