@@ -13,7 +13,10 @@ namespace Gridly
         MainState state;
         float synapseInterval = 0.5f;
         float remainingDelay = 0f;
-        MouseState prevMouseState;
+        Vector2 curtMousePos, prevMousePos;
+        MouseState curMouseState, prevMouseState;
+        KeyboardState curKeyState, prevKeyState;
+        Matrix scale;
 
         List<Neuron> neurons;
         Neuron connectFrom;
@@ -27,12 +30,14 @@ namespace Gridly
         protected override void Initialize()
         {
             IsMouseVisible = true;
+            
             graphics.PreferredBackBufferWidth = 1920;
             graphics.PreferredBackBufferHeight = 1080;
             graphics.ApplyChanges();
 
             state = MainState.IDEAL;
             neurons = new List<Neuron>();
+            scale = Matrix.CreateScale(2);
             base.Initialize();
         }
 
@@ -63,19 +68,66 @@ namespace Gridly
                 remainingDelay = synapseInterval;
             }
 
-            var mouse = Mouse.GetState();
+            curMouseState = Mouse.GetState();
+            var position = curMouseState.Position;
+            var posVec = Vector2.Transform(position.ToVector2(), Matrix.Invert(scale));
+            curtMousePos = posVec;
+            curKeyState = Keyboard.GetState();
 
-            if (mouse.RightButton == ButtonState.Pressed
-                && prevMouseState.RightButton == ButtonState.Released)
+            UpdateNeuronInput();
+            
+            prevMousePos = posVec;
+            prevMouseState = curMouseState;
+            prevKeyState = curKeyState;
+
+            base.Update(gameTime);
+        }
+
+        private bool IsNeuronOnPos(Vector2 pos, out Neuron neuron)
+        {
+            foreach (var n in neurons)
             {
-                if (!IsNeuronOnMouse(out var _))
-                    neurons.Add(new Neuron(mouse.Position.ToVector2()));
+                if (n.GetBounds().Contains(pos))
+                {
+                    neuron = n;
+                    return true;
+                }
+            }
+            neuron = null;
+            return false;
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            spriteBatch.Begin(transformMatrix: scale);
+
+            if (state == MainState.NEURON_CONNECTING)
+            {
+                GUI.DrawLine(spriteBatch, connectFrom.Position, curtMousePos, 1f, Color.Blue);
             }
 
-            if (mouse.LeftButton == ButtonState.Pressed
+            foreach (var n in neurons)
+                n.Draw(spriteBatch);
+            spriteBatch.End();
+
+            base.Draw(gameTime);
+        }
+
+        private void UpdateNeuronInput()
+        {
+            if (curMouseState.RightButton == ButtonState.Pressed
+                && prevMouseState.RightButton == ButtonState.Released)
+            {
+                if (!IsNeuronOnPos(curtMousePos, out var _))
+                    neurons.Add(new Neuron(curtMousePos));
+            }
+
+            if (curMouseState.LeftButton == ButtonState.Pressed
                 && prevMouseState.LeftButton == ButtonState.Released)
             {
-                if (IsNeuronOnMouse(out var n))
+                if (IsNeuronOnPos(curtMousePos, out var n))
                 {
                     if (state == MainState.IDEAL)
                     {
@@ -91,47 +143,22 @@ namespace Gridly
                 }
             }
 
-            prevMouseState = mouse;
-
-            base.Update(gameTime);
-        }
-
-        private bool IsNeuronOnMouse(out Neuron neuron)
-        {
-            var mouse = Mouse.GetState();
-            foreach (var n in neurons)
+            if (curKeyState.IsKeyDown(Keys.Space)
+                && prevKeyState.IsKeyUp(Keys.Space))
             {
-                if (n.GetBounds().Contains(mouse.Position))
+                if (IsNeuronOnPos(curtMousePos, out var n))
                 {
-                    neuron = n;
-                    return true;
+                    n.ActivateImmediate();
                 }
             }
-            neuron = null;
-            return false;
-        }
-
-        protected override void Draw(GameTime gameTime)
-        {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            spriteBatch.Begin();
-
-            if (state == MainState.NEURON_CONNECTING)
-            {
-                GUI.DrawLine(spriteBatch, connectFrom.Position, Mouse.GetState().Position.ToVector2(), 1f, Color.Blue);
-            }
-
-            foreach (var n in neurons)
-                n.Draw(spriteBatch);
-            spriteBatch.End();
-
-            base.Draw(gameTime);
         }
 
         private void TickSynapse()
         {
-
+            foreach (var n in neurons)
+                n.UpdateSynapse();
+            foreach (var n in neurons)
+                n.UpdateState();
         }
     }
 }

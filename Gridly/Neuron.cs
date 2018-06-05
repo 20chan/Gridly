@@ -12,6 +12,7 @@ namespace Gridly
         private List<Neuron> connecting;
 
         public bool Activated { get; private set; }
+        private bool shouldActivate = false;
 
         public Neuron(Vector2 pos)
         {
@@ -28,14 +29,28 @@ namespace Gridly
             Activated = false;
         }
 
+        public void UpdateState()
+        {
+            if (shouldActivate)
+            {
+                Activated = true;
+                shouldActivate = false;
+            }
+        }
+
         public Rectangle GetBounds()
             => new Rectangle((Position - Origin).ToPoint(), Resources.NeuronTexture.Bounds.Size);
 
         public void Draw(SpriteBatch sb)
         {
             foreach (var n in connecting)
-                GUI.DrawLine(sb, Position, n.Position, 1f, Color.Blue, 1f);
-            sb.Draw(Resources.NeuronTexture, position: Position, origin: Origin, color: Color.White, layerDepth: 0f);
+                GUI.DrawLine(sb, Position, n.Position, 1f, Color.Blue);
+            sb.Draw(
+                Resources.NeuronTexture,
+                position: Position,
+                origin: Origin,
+                color: Activated ? Color.Blue : Color.White,
+                layerDepth: .5f);
         }
 
         public void ConnectTo(Neuron n)
@@ -45,6 +60,11 @@ namespace Gridly
         }
 
         public void Activate()
+        {
+            shouldActivate = true;
+        }
+
+        public void ActivateImmediate()
         {
             Activated = true;
         }
