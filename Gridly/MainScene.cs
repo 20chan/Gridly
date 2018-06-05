@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -173,6 +174,19 @@ namespace Gridly
                     n.ActivateImmediate();
                 }
             }
+
+            if (IsKeyDown(Keys.Delete))
+                if (state == MainState.IDEAL)
+                    if (IsNeuronOnPos(curtMousePos, out var n))
+                        DeleteNeuron(n);
+        }
+
+        private void DeleteNeuron(Neuron n)
+        {
+            foreach (var neu in neurons)
+                neu.Disconnect(n);
+
+            neurons.Remove(n);
         }
 
         private void TickSynapse()

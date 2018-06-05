@@ -59,6 +59,14 @@ namespace Gridly
                 connecting.Add(n);
         }
 
+        public void Disconnect(Neuron n)
+        {
+            if (n.connecting.Contains(this))
+                n.connecting.Remove(this);
+            if (connecting.Contains(n))
+                connecting.Remove(n);
+        }
+
         public void Activate()
         {
             shouldActivate = true;
