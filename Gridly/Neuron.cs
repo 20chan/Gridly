@@ -121,6 +121,9 @@ namespace Gridly
             Activated = true;
         }
 
+        public bool IsCollided(Neuron n)
+            => GetBounds().Intersects(n.GetBounds());
+
         public void Log(StringBuilder sb)
         {
             sb.AppendLine($"Neuron {ID}");
