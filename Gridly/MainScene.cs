@@ -169,6 +169,14 @@ namespace Gridly
             {
                 dragging.Position = curtMousePos;
             }
+
+            if (state == MainState.NEURON_DISCONNECTING)
+            {
+                foreach (var n in neurons)
+                {
+                    n.PreviewDisconnect(disconnectFrom, curtMousePos);
+                }
+            }
             
             if (IsLeftMouseUp())
             {
@@ -201,8 +209,10 @@ namespace Gridly
         private void DeleteNeuron(Neuron n)
         {
             foreach (var neu in neurons)
+            {
+                n.Disconnect(neu);
                 neu.Disconnect(n);
-
+            }
             neurons.Remove(n);
         }
 

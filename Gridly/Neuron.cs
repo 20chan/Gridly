@@ -11,6 +11,7 @@ namespace Gridly
         private static Vector2 Origin = Resources.NeuronTexture.Bounds.Size.ToVector2() / 2;
 
         private List<Neuron> connecting;
+        private List<bool> couldDisconnected;
 
         public bool Activated { get; private set; }
         private bool shouldActivate = false;
@@ -19,6 +20,7 @@ namespace Gridly
         {
             Position = pos;
             connecting = new List<Neuron>();
+            couldDisconnected = new List<bool>();
             Activated = false;
         }
 
@@ -44,9 +46,11 @@ namespace Gridly
 
         public void DrawSynapse(SpriteBatch sb)
         {
-            foreach (var n in connecting)
+            for (int i = 0; i < connecting.Count; i++)
             {
-                GUI.DrawLine(sb, Position, n.Position, 2f, Color.Blue, 0.5f);
+                var n = connecting[i];
+                GUI.DrawLine(sb, Position, n.Position, 2f,
+                    couldDisconnected[i] ? Color.Yellow : Color.Blue, 0.5f);
             }
         }
 
@@ -74,15 +78,20 @@ namespace Gridly
         public void ConnectTo(Neuron n)
         {
             if (!connecting.Contains(n))
+            {
                 connecting.Add(n);
+                couldDisconnected.Add(false);
+            }
         }
 
         public void Disconnect(Neuron n)
         {
-            if (n.connecting.Contains(this))
-                n.connecting.Remove(this);
             if (connecting.Contains(n))
-                connecting.Remove(n);
+            {
+                var idx = connecting.IndexOf(n);
+                connecting.RemoveAt(idx);
+                couldDisconnected.RemoveAt(idx);
+            }
         }
 
         public void DisconnectIntersection(Vector2 p1, Vector2 p2)
@@ -90,7 +99,13 @@ namespace Gridly
             var clone = connecting.ToArray();
             foreach (var n in clone)
                 if (Geometry.IsTwoSegmentsInstersect(Position, n.Position, p1, p2))
-                    connecting.Remove(n);
+                    Disconnect(n);
+        }
+
+        public void PreviewDisconnect(Vector2 p1, Vector2 p2)
+        {
+            for (int i = 0; i < connecting.Count; i++)
+                couldDisconnected[i] = Geometry.IsTwoSegmentsInstersect(Position, connecting[i].Position, p1, p2);
         }
 
         public void Activate()
