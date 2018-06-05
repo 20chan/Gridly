@@ -41,10 +41,20 @@ namespace Gridly
         public Rectangle GetBounds()
             => new Rectangle((Position - Origin).ToPoint(), Resources.NeuronTexture.Bounds.Size);
 
-        public void Draw(SpriteBatch sb)
+        public void DrawSynapse(SpriteBatch sb)
         {
             foreach (var n in connecting)
-                GUI.DrawLine(sb, Position, n.Position, 1f, Color.Blue);
+            {
+                var ratio80 = new Vector2(
+                    .2f * Position.X + .8f * n.Position.X,
+                    .2f * Position.Y + .8f * n.Position.Y);
+                GUI.DrawLine(sb, Position, n.Position, 2f, Color.Blue);
+                GUI.DrawLine(sb, ratio80, n.Position, 2f, Color.Gray);
+            }
+        }
+
+        public void Draw(SpriteBatch sb)
+        {
             sb.Draw(
                 Resources.NeuronTexture,
                 position: Position,
