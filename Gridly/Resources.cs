@@ -8,5 +8,6 @@ namespace Gridly
         public static bool IsLoaded = false;
         public static Texture2D NeuronTexture;
         public static Texture2D DummyTexture;
+        public static SpriteFont DefaultFont;
     }
 }

@@ -53,9 +53,10 @@ namespace Gridly
             tilemap = new TileMap(neurons, 16, 9);
             scale = Matrix.CreateScale(2);
 
-            btnTest = new Button(10, 10, 250, 100)
+            btnTest = new Button(10, 10, 250, 100, "Wow It works!")
             {
-                BackColor = Color.Gray
+                Border = 2,
+                TextAlignment = Alignment.Bottom | Alignment.Right
             };
             guiManager.Add(btnTest);
 
@@ -69,6 +70,7 @@ namespace Gridly
             Resources.DummyTexture = new Texture2D(GraphicsDevice, 1, 1);
             Resources.DummyTexture.SetData(new[] { Color.White });
             Resources.NeuronTexture = Content.Load<Texture2D>("Img/Neuron");
+            Resources.DefaultFont = Content.Load<SpriteFont>("defaultFont");
         }
 
         protected override void UnloadContent()
@@ -139,14 +141,14 @@ namespace Gridly
 
             spriteBatch.Begin(transformMatrix: scale);
 
-            guiManager.DrawUI(spriteBatch);
-            DrawPreviews();
             foreach (var n in neurons)
                 n.DrawSynapse(spriteBatch);
             foreach (var n in neurons)
                 n.DrawUpperSynapse(spriteBatch);
             foreach (var n in neurons)
                 n.Draw(spriteBatch);
+            DrawPreviews();
+            guiManager.DrawUI(spriteBatch);
 
             spriteBatch.End();
             base.Draw(gameTime);
