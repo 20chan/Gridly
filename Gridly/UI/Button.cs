@@ -20,6 +20,9 @@ namespace Gridly.UI
         public SpriteFont Font { get; set; }
         public ClickStyle ClickStyle { get; set; } = 0;
 
+        public Color MouseOverBackColor;
+        public Color MouseDownBackColor;
+
         public int X { get; set; } = -1;
         public int Y { get; set; } = -1;
         public int Width { get; set; } = -1;
@@ -73,7 +76,19 @@ namespace Gridly.UI
                 else
                     DrawNormal();
             }
-           
+            else if (ClickStyle == ClickStyle.Flat)
+            {
+                Color back = BackColor;
+                if (IsMousePressing)
+                    back = MouseDownBackColor;
+                else if (IsMouseHover)
+                    back = MouseOverBackColor;
+
+                sb.FillRectangle(GetBorderBounds(), BorderColor);
+                sb.FillRectangle(GetBounds(), back);
+                sb.DrawString(Font ?? Resources.DefaultFont, Text, TextAlignment, GetBounds(), TextColor, 0f);
+            }
+
             void DrawNormal()
             {
                 sb.FillRectangle(GetBorderBounds(), BorderColor);
