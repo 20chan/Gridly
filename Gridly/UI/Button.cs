@@ -1,36 +1,14 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Gridly.UI
 {
-    public class Button : Clickable, ISquareUI
+    public class Button : ButtonBase, ISquareUI
     {
-        private int _border = 0;
-        public int Border
-        {
-            get => _border;
-            set => _border = Math.Max(0, value);
-        }
-        public Color BorderColor { get; set; } = Color.Black;
-        public Color BackColor { get; set; } = Color.White;
-        public Color TextColor { get; set; } = Color.Black;
-        public Alignment TextAlignment { get; set; } = 0;
-        public string Text { get; set; }
-        public SpriteFont Font { get; set; }
-        public ClickStyle ClickStyle { get; set; } = 0;
-
-        public Color MouseOverBackColor;
-        public Color MouseDownBackColor;
-
         public int X { get; set; } = -1;
         public int Y { get; set; } = -1;
         public int Width { get; set; } = -1;
         public int Height { get; set; } = -1;
-
-        public bool IsDown => IsMouseDown;
-        public bool IsUp => IsMouseUp;
-        public bool Pressing { get; private set; }
 
         public Button(int x, int y, int width, int height, string text = "")
         {
@@ -52,16 +30,6 @@ namespace Gridly.UI
 
         protected override bool IsHovering(Vector2 pos)
             => GetBounds().Contains(pos);
-
-        protected override bool HandleInputs()
-        {
-            if (IsMouseDown)
-                Pressing = true;
-            if (IsMouseUp)
-                Pressing = false;
-
-            return Pressing;
-        }
 
         public override void Draw(SpriteBatch sb)
         {
