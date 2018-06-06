@@ -57,6 +57,7 @@
     <Compile Include="UI\Alignment.cs" />
     <Compile Include="UI\Button.cs" />
     <Compile Include="UI\Clickable.cs" />
+    <Compile Include="UI\ClickStyle.cs" />
     <Compile Include="UI\GUI.cs" />
     <Compile Include="UI\GUIManager.cs" />
     <Compile Include="UI\ISquareUI.cs" />
