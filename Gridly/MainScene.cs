@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Gridly.UI;
 
 namespace Gridly
 {
@@ -19,13 +20,17 @@ namespace Gridly
         Vector2 curtMousePos, prevMousePos;
         MouseState curMouseState, prevMouseState;
         KeyboardState curKeyState, prevKeyState;
+        bool isUIHandledInput;
         Matrix scale;
 
         TileMap tilemap;
+        GUIManager guiManager;
         List<Neuron> neurons;
         Neuron connectFrom;
         Neuron dragging;
         Vector2 disconnectFrom;
+
+        Button btnTest;
 
         public MainScene()
         {
@@ -44,8 +49,16 @@ namespace Gridly
             state = MainState.IDEAL;
             random = new Random();
             neurons = new List<Neuron>();
+            guiManager = new GUIManager();
             tilemap = new TileMap(neurons, 16, 9);
             scale = Matrix.CreateScale(2);
+
+            btnTest = new Button(10, 10, 250, 100)
+            {
+                BackColor = Color.Gray
+            };
+            guiManager.Add(btnTest);
+
             base.Initialize();
         }
 
@@ -84,6 +97,8 @@ namespace Gridly
             curtMousePos = posVec;
             curKeyState = Keyboard.GetState();
 
+            isUIHandledInput = guiManager.HandleInput(curMouseState, curtMousePos);
+            UpdateUIEvent();
             UpdateNeuronInput();
             tilemap.UpdatePhysics();
 
@@ -124,24 +139,29 @@ namespace Gridly
 
             spriteBatch.Begin(transformMatrix: scale);
 
-            if (state == MainState.NEURON_CONNECTING)
-            {
-                GUI.DrawLine(spriteBatch, connectFrom.Position, curtMousePos, 1f, Color.Blue);
-            }
-            else if (state == MainState.NEURON_DISCONNECTING)
-            {
-                GUI.DrawLine(spriteBatch, disconnectFrom, curtMousePos, 1f, Color.Red);
-            }
-
+            guiManager.DrawUI(spriteBatch);
+            DrawPreviews();
             foreach (var n in neurons)
                 n.DrawSynapse(spriteBatch);
             foreach (var n in neurons)
                 n.DrawUpperSynapse(spriteBatch);
             foreach (var n in neurons)
                 n.Draw(spriteBatch);
-            spriteBatch.End();
 
+            spriteBatch.End();
             base.Draw(gameTime);
+        }
+
+        private void DrawPreviews()
+        {
+            if (state == MainState.NEURON_CONNECTING)
+            {
+                spriteBatch.DrawLine(connectFrom.Position, curtMousePos, 1f, Color.Blue);
+            }
+            else if (state == MainState.NEURON_DISCONNECTING)
+            {
+                spriteBatch.DrawLine(disconnectFrom, curtMousePos, 1f, Color.Red);
+            }
         }
 
         private string Log()
@@ -150,6 +170,14 @@ namespace Gridly
             foreach (var n in neurons)
                 n.Log(sb);
             return sb.ToString();
+        }
+
+        private void UpdateUIEvent()
+        {
+            if (btnTest.IsDown)
+            {
+                btnTest.X += 10;
+            }
         }
 
         private void UpdateNeuronInput()
@@ -263,6 +291,8 @@ namespace Gridly
             //Console.Write(Log());
         }
 
+        #region Input
+
         private bool IsKeyDown(Keys key)
             => curKeyState.IsKeyDown(key) && prevKeyState.IsKeyUp(key);
 
@@ -273,7 +303,8 @@ namespace Gridly
             => curKeyState.IsKeyUp(key) && prevKeyState.IsKeyDown(key);
 
         private bool IsLeftMouseDown()
-            => curMouseState.LeftButton == ButtonState.Pressed
+            => !isUIHandledInput
+            && curMouseState.LeftButton == ButtonState.Pressed
             && prevMouseState.LeftButton == ButtonState.Released;
 
         private bool IsLeftMousePressing()
@@ -293,5 +324,7 @@ namespace Gridly
         private bool IsRightMouseUp()
             => curMouseState.RightButton == ButtonState.Released
             && prevMouseState.RightButton == ButtonState.Pressed;
+
+        #endregion
     }
 }

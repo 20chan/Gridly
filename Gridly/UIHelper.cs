@@ -4,9 +4,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Gridly
 {
-    public class GUI
+    public static class UIHelper
     {
-        public static void DrawLine(SpriteBatch sb, Vector2 p1, Vector2 p2, float border, Color color, float layerDepth = 0)
+        public static void DrawLine(this SpriteBatch sb, Vector2 p1, Vector2 p2, float border, Color color, float layerDepth = 0)
         {
             float angle = (float)Math.Atan2(p2.Y - p1.Y, p2.X - p1.X);
             float length = Vector2.Distance(p1, p2);
@@ -17,5 +17,8 @@ namespace Gridly
             var _p1 = p1 - new Vector2((float)_x, (float)_y) * border * 0.5f;
             sb.Draw(Resources.DummyTexture, _p1, null, color, angle, Vector2.Zero, scale, SpriteEffects.None, layerDepth);
         }
+
+        public static void FillRectangle(this SpriteBatch sb, Rectangle rect, Color color)
+            => sb.Draw(Resources.DummyTexture, rect, color);
     }
 }

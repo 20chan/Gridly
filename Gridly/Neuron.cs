@@ -52,7 +52,7 @@ namespace Gridly
             for (int i = 0; i < connecting.Count; i++)
             {
                 var n = connecting[i];
-                GUI.DrawLine(sb, Position, n.Position, 2f,
+                sb.DrawLine(Position, n.Position, 2f,
                     couldDisconnected[i] ? Color.Yellow : Color.Blue, 0.5f);
             }
         }
@@ -64,7 +64,7 @@ namespace Gridly
                 var ratio80 = new Vector2(
                     .2f * Position.X + .8f * n.Position.X,
                     .2f * Position.Y + .8f * n.Position.Y);
-                GUI.DrawLine(sb, ratio80, n.Position, 2f, Color.Gray, 0.3f);
+                sb.DrawLine(ratio80, n.Position, 2f, Color.Gray, 0.3f);
             }
         }
 
