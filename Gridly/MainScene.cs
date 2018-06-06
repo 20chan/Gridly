@@ -30,8 +30,6 @@ namespace Gridly
         Neuron dragging;
         Vector2 disconnectFrom;
 
-        Button btnTest;
-
         public MainScene()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -52,13 +50,6 @@ namespace Gridly
             guiManager = new GUIManager();
             tilemap = new TileMap(neurons, 16, 9);
             scale = Matrix.CreateScale(2);
-
-            btnTest = new Button(10, 10, 250, 100, "Wow It works!")
-            {
-                Border = 2,
-                TextAlignment = Alignment.Bottom | Alignment.Right
-            };
-            guiManager.Add(btnTest);
 
             base.Initialize();
         }
@@ -176,10 +167,7 @@ namespace Gridly
 
         private void UpdateUIEvent()
         {
-            if (btnTest.IsDown)
-            {
-                btnTest.X += 10;
-            }
+
         }
 
         private void UpdateNeuronInput()
