@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
+using static Gridly.Inputs;
 
 namespace Gridly.UI
 {
@@ -42,14 +42,14 @@ namespace Gridly.UI
         private bool _previousMouseDown = false;
         private bool _shouldNotBeDown = false;
 
-        public override bool HandleInputs(MouseState state, Vector2 position)
+        public override bool ProcessInput()
         {
             if (IsMouseEntered) IsMouseEntered = false;
             if (IsMouseDown) IsMouseDown = false;
             if (IsMouseUp) IsMouseUp = false;
             if (IsMouseLeaved) IsMouseLeaved = false;
 
-            if (IsHovering(position))
+            if (IsHovering(MousePos))
             {
                 if (!IsMouseHover)
                 {
@@ -58,7 +58,7 @@ namespace Gridly.UI
                     IsMouseHover = true;
                     IsMouseEntered = true;
                 }
-                if (state.LeftButton == ButtonState.Pressed)
+                if (IsLeftMousePressing())
                 {
                     if (!IsMousePressing && !_shouldNotBeDown)
                     {
@@ -77,7 +77,7 @@ namespace Gridly.UI
                     _shouldNotBeDown = false;
                 }
 
-                var scroll = state.ScrollWheelValue;
+                var scroll = ScrollWheelValue;
                 MouseWheel = scroll - _previouseWheel;
                 _previouseWheel = scroll;
             }
@@ -93,7 +93,7 @@ namespace Gridly.UI
                 if (IsMousePressing)
                 {
                     // 안에서 클릭해서 밖으로 드래그한 경우
-                    if (state.LeftButton == ButtonState.Released)
+                    if (!IsLeftMousePressing())
                     {
                         IsMousePressing = false;
                         IsMouseUp = true;
@@ -102,7 +102,7 @@ namespace Gridly.UI
                 }
             }
 
-            _previousMouseDown = state.LeftButton == ButtonState.Pressed;
+            _previousMouseDown = IsLeftMousePressing();
 
             return HandleInputs();
         }

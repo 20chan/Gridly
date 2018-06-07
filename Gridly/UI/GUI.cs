@@ -6,7 +6,7 @@ namespace Gridly.UI
 {
     public abstract class GUI
     {
-        public abstract bool HandleInputs(MouseState state, Vector2 position);
+        public abstract bool ProcessInput();
         public abstract void Draw(SpriteBatch sb);
     }
 }

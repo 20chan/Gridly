@@ -27,11 +27,11 @@ namespace Gridly.UI
         /// <summary>
         /// Returns if mouse event was handled
         /// </summary>
-        public bool HandleInput(MouseState state, Vector2 position)
+        public bool HandleInput()
         {
             foreach (var ui in uis)
             {
-                if (ui.HandleInputs(state, position))
+                if (ui.ProcessInput())
                     return true;
             }
             return false;
