@@ -17,7 +17,6 @@ namespace Gridly
         Part connectFrom;
         Part dragging;
         Vector2 disconnectFrom;
-        Circuit editingCircuit;
 
         public PartEditor()
         {
@@ -31,8 +30,6 @@ namespace Gridly
         {
             UpdatePartInput();
             tilemap.UpdatePhysics();
-            if (!state.IsNeuralEditor())
-                editingCircuit.UpdateInnerPhysics();
         }
 
         public void Draw(SpriteBatch sb)
@@ -110,35 +107,32 @@ namespace Gridly
 
             if (IsLeftMouseDown())
             {
-                if (state.IsNeuralEditor())
+                if (IsPartOnPos(MousePos, out var n))
                 {
-                    if (IsPartOnPos(MousePos, out var n))
+                    if (state == EditorState.IDEAL)
                     {
-                        if (state == EditorState.IDEAL)
+                        if (IsKeyPressing(Keys.LeftShift))
                         {
-                            if (IsKeyPressing(Keys.LeftShift))
-                            {
-                                connectFrom = n;
-                                state = EditorState.NEURON_CONNECTING;
-                            }
-                            else
-                            {
-                                dragging = n;
-                                state = EditorState.NEURON_DRAGGING;
-                            }
+                            connectFrom = n;
+                            state = EditorState.NEURON_CONNECTING;
                         }
-                        else if (state == EditorState.NEURON_CONNECTING)
+                        else
                         {
-                            connectFrom.ConnectTo(n);
-                            connectFrom = null;
-                            state = EditorState.IDEAL;
+                            dragging = n;
+                            state = EditorState.NEURON_DRAGGING;
                         }
                     }
-                    else if (IsKeyPressing(Keys.LeftControl))
+                    else if (state == EditorState.NEURON_CONNECTING)
                     {
-                        disconnectFrom = MousePos;
-                        state = EditorState.NEURON_DISCONNECTING;
+                        connectFrom.ConnectTo(n);
+                        connectFrom = null;
+                        state = EditorState.IDEAL;
                     }
+                }
+                else if (IsKeyPressing(Keys.LeftControl))
+                {
+                    disconnectFrom = MousePos;
+                    state = EditorState.NEURON_DISCONNECTING;
                 }
             }
 
@@ -173,10 +167,6 @@ namespace Gridly
             {
                 if (IsPartOnPos(MousePos, out var n))
                 {
-                    if (n is Circuit c)
-                    {
-                        editingCircuit = c;
-                    }
                     n.ActivateImmediate();
                 }
             }
