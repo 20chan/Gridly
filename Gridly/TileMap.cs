@@ -14,11 +14,11 @@ namespace Gridly
         public int HeightTileCount { get; private set; }
 
         private Tile[,] tiles;
-        private List<Neuron> neurons;
+        private List<Part> parts;
 
-        public TileMap(List<Neuron> neurons, int width, int height, float tileSize = 128)
+        public TileMap(List<Part> parts, int width, int height, float tileSize = 128)
         {
-            this.neurons = neurons;
+            this.parts = parts;
             WidthTileCount = width;
             HeightTileCount = height;
             Width = width * tileSize;
@@ -59,11 +59,11 @@ namespace Gridly
             }
         }
 
-        public void TileNeurons()
+        public void TileParts()
         {
             foreach (var t in tiles)
                 t.Clear();
-            foreach (var n in neurons)
+            foreach (var n in parts)
             {
                 var x = (int)(n.Position.X / TileSize);
                 var y = (int)(n.Position.Y / TileSize);
@@ -73,7 +73,7 @@ namespace Gridly
 
         public void UpdatePhysics()
         {
-            foreach (var n in neurons)
+            foreach (var n in parts)
                 n.UpdatePhysics();
             foreach (var t in tiles)
                 t.UpdatePhysics();
@@ -83,38 +83,38 @@ namespace Gridly
         class Tile
         {
             public Tile[] nearTiles;
-            private List<Neuron> neurons;
+            private List<Part> parts;
 
             public Tile()
             {
-                neurons = new List<Neuron>();
+                parts = new List<Part>();
                 nearTiles = new Tile[8];
             }
 
             public void Clear()
             {
-                neurons.Clear();
+                parts.Clear();
             }
 
-            public void Add(Neuron n)
+            public void Add(Part n)
             {
-                neurons.Add(n);
+                parts.Add(n);
             }
 
             public void UpdatePhysics()
             {
-                foreach (var n in neurons)
+                foreach (var n in parts)
                 {
-                    foreach (var m in neurons)
+                    foreach (var m in parts)
                         ProcessCollision(n, m);
                     foreach (var t in nearTiles)
                         if (t != null)
-                            foreach (var m in t.neurons)
+                            foreach (var m in t.parts)
                                 ProcessCollision(n, m);
                 }
             }
 
-            private void ProcessCollision(Neuron a, Neuron b)
+            private void ProcessCollision(Part a, Part b)
             {
                 if (a == b)
                     return;

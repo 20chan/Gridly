@@ -44,8 +44,10 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Circuit.cs" />
     <Compile Include="Geometry.cs" />
     <Compile Include="IConnectable.cs" />
+    <Compile Include="Part.cs" />
     <Compile Include="UIHelper.cs" />
     <Compile Include="Collidable.cs" />
     <Compile Include="MainScene.cs" />

@@ -25,9 +25,9 @@ namespace Gridly
 
         TileMap tilemap;
         GUIManager guiManager;
-        List<Neuron> neurons;
-        Neuron connectFrom;
-        Neuron dragging;
+        List<Part> parts;
+        Part connectFrom;
+        Part dragging;
         Vector2 disconnectFrom;
 
         public MainScene()
@@ -46,9 +46,9 @@ namespace Gridly
 
             state = MainState.IDEAL;
             random = new Random();
-            neurons = new List<Neuron>();
+            parts = new List<Part>();
             guiManager = new GUIManager();
-            tilemap = new TileMap(neurons, 16, 9);
+            tilemap = new TileMap(parts, 16, 9);
             scale = Matrix.CreateScale(2);
 
             base.Initialize();
@@ -60,7 +60,7 @@ namespace Gridly
 
             Resources.DummyTexture = new Texture2D(GraphicsDevice, 1, 1);
             Resources.DummyTexture.SetData(new[] { Color.White });
-            Resources.NeuronTexture = Content.Load<Texture2D>("Img/Neuron");
+            Resources.PartTexture = Content.Load<Texture2D>("Img/Neuron");
             Resources.DefaultFont = Content.Load<SpriteFont>("defaultFont");
         }
 
@@ -79,7 +79,7 @@ namespace Gridly
             if (remainingDelay <= 0)
             {
                 TickSynapse();
-                tilemap.TileNeurons();
+                tilemap.TileParts();
                 remainingDelay = synapseInterval;
                 Console.WriteLine($"Laggy?: {gameTime.IsRunningSlowly}");
             }
@@ -92,7 +92,7 @@ namespace Gridly
 
             isUIHandledInput = guiManager.HandleInput(curMouseState, curtMousePos);
             UpdateUIEvent();
-            UpdateNeuronInput();
+            UpdatePartInput();
             tilemap.UpdatePhysics();
 
             if (IsKeyDown(Keys.Enter))
@@ -112,17 +112,17 @@ namespace Gridly
             base.Update(gameTime);
         }
         
-        private bool IsNeuronOnPos(Vector2 pos, out Neuron neuron)
+        private bool IsPartOnPos(Vector2 pos, out Part part)
         {
-            foreach (var n in neurons)
+            foreach (var n in parts)
             {
                 if (n.GetBounds().Contains(pos))
                 {
-                    neuron = n;
+                    part = n;
                     return true;
                 }
             }
-            neuron = null;
+            part = null;
             return false;
         }
 
@@ -132,11 +132,11 @@ namespace Gridly
 
             spriteBatch.Begin(transformMatrix: scale);
 
-            foreach (var n in neurons)
+            foreach (var n in parts)
                 n.DrawSynapse(spriteBatch);
-            foreach (var n in neurons)
+            foreach (var n in parts)
                 n.DrawUpperSynapse(spriteBatch);
-            foreach (var n in neurons)
+            foreach (var n in parts)
                 n.Draw(spriteBatch);
             DrawPreviews();
             guiManager.DrawUI(spriteBatch);
@@ -160,7 +160,7 @@ namespace Gridly
         private string Log()
         {
             var sb = new System.Text.StringBuilder();
-            foreach (var n in neurons)
+            foreach (var n in parts)
                 n.Log(sb);
             return sb.ToString();
         }
@@ -170,17 +170,17 @@ namespace Gridly
 
         }
 
-        private void UpdateNeuronInput()
+        private void UpdatePartInput()
         {
             if (IsRightMouseDown())
             {
-                if (!IsNeuronOnPos(curtMousePos, out var _))
+                if (!IsPartOnPos(curtMousePos, out var _))
                     SpawnNeuron(curtMousePos);
             }
 
             if (IsLeftMouseDown())
             {
-                if (IsNeuronOnPos(curtMousePos, out var n))
+                if (IsPartOnPos(curtMousePos, out var n))
                 {
                     if (state == MainState.IDEAL)
                     {
@@ -216,7 +216,7 @@ namespace Gridly
 
             if (state == MainState.NEURON_DISCONNECTING)
             {
-                foreach (var n in neurons)
+                foreach (var n in parts)
                 {
                     n.PreviewDisconnect(disconnectFrom, curtMousePos);
                 }
@@ -238,7 +238,7 @@ namespace Gridly
 
             if (IsKeyDown(Keys.Space))
             {
-                if (IsNeuronOnPos(curtMousePos, out var n))
+                if (IsPartOnPos(curtMousePos, out var n))
                 {
                     n.ActivateImmediate();
                 }
@@ -246,36 +246,36 @@ namespace Gridly
 
             if (IsKeyDown(Keys.Delete))
                 if (state == MainState.IDEAL)
-                    if (IsNeuronOnPos(curtMousePos, out var n))
-                        DeleteNeuron(n);
+                    if (IsPartOnPos(curtMousePos, out var n))
+                        DeletePart(n);
         }
 
         private void SpawnNeuron(Vector2 position)
         {
-            neurons.Add(new Neuron(position, (uint)neurons.Count));
+            parts.Add(new Neuron(position, (uint)parts.Count));
         }
 
-        private void DeleteNeuron(Neuron n)
+        private void DeletePart(Part n)
         {
-            foreach (var neu in neurons)
+            foreach (var neu in parts)
             {
                 n.Disconnect(neu);
                 neu.Disconnect(n);
             }
-            neurons.Remove(n);
+            parts.Remove(n);
         }
 
         private void DisconnectIntersection(Vector2 from, Vector2 to)
         {
-            foreach (var n in neurons)
+            foreach (var n in parts)
                 n.DisconnectIntersection(from, to);
         }
 
         private void TickSynapse()
         {
-            foreach (var n in neurons)
+            foreach (var n in parts)
                 n.UpdateSynapse();
-            foreach (var n in neurons)
+            foreach (var n in parts)
                 n.UpdateState();
             //Console.WriteLine($"After Tick {tickCount++}");
             //Console.Write(Log());

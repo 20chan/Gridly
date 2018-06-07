@@ -6,28 +6,20 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Gridly
 {
-    public class Neuron : Collidable, IConnectable
+    public class Neuron : Part
     {
-        public uint ID { get; }
-        private static Vector2 Origin = Resources.NeuronTexture.Bounds.Size.ToVector2() / 2;
-
-        private List<IConnectable> connecting;
-        private List<bool> couldDisconnected;
-
         public bool Activated { get; private set; }
         private bool shouldActivate = false;
 
-        public Neuron(Vector2 pos, uint id)
+        public Neuron(Vector2 pos, uint id) : base(pos, id)
         {
-            ID = id;
-            Position = pos;
             connecting = new List<IConnectable>();
             couldDisconnected = new List<bool>();
             Activated = false;
             friction = .1f;
         }
 
-        public void UpdateSynapse()
+        public override void UpdateSynapse()
         {
             if (Activated)
                 foreach (var n in connecting)
@@ -35,7 +27,7 @@ namespace Gridly
             Activated = false;
         }
 
-        public void UpdateState()
+        public override void UpdateState()
         {
             if (shouldActivate)
             {
@@ -44,10 +36,7 @@ namespace Gridly
             }
         }
 
-        public override Rectangle GetBounds()
-            => new Rectangle((Position - Origin).ToPoint(), Resources.NeuronTexture.Bounds.Size);
-
-        public void DrawSynapse(SpriteBatch sb)
+        public override void DrawSynapse(SpriteBatch sb)
         {
             for (int i = 0; i < connecting.Count; i++)
             {
@@ -57,7 +46,7 @@ namespace Gridly
             }
         }
 
-        public void DrawUpperSynapse(SpriteBatch sb)
+        public override void DrawUpperSynapse(SpriteBatch sb)
         {
             foreach (var n in connecting)
             {
@@ -68,63 +57,17 @@ namespace Gridly
             }
         }
 
-        public void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb)
         {
             sb.Draw(
-                Resources.NeuronTexture,
+                Resources.PartTexture,
                 position: Position,
                 origin: Origin,
                 color: Activated ? Color.Blue : Color.White,
                 layerDepth: .5f);
         }
 
-        public void ConnectTo(IConnectable n)
-        {
-            if (!connecting.Contains(n))
-            {
-                connecting.Add(n);
-                couldDisconnected.Add(false);
-            }
-        }
-
-        public void Disconnect(IConnectable n)
-        {
-            if (connecting.Contains(n))
-            {
-                var idx = connecting.IndexOf(n);
-                connecting.RemoveAt(idx);
-                couldDisconnected.RemoveAt(idx);
-            }
-        }
-
-        public void DisconnectIntersection(Vector2 p1, Vector2 p2)
-        {
-            var clone = connecting.ToArray();
-            foreach (var n in clone)
-                if (Geometry.IsTwoSegmentsInstersect(Position, n.Position, p1, p2))
-                    Disconnect(n);
-        }
-
-        public void PreviewDisconnect(Vector2 p1, Vector2 p2)
-        {
-            for (int i = 0; i < connecting.Count; i++)
-                couldDisconnected[i] = Geometry.IsTwoSegmentsInstersect(Position, connecting[i].Position, p1, p2);
-        }
-
-        public void Activate(IConnectable from)
-        {
-            shouldActivate = true;
-        }
-
-        public void ActivateImmediate()
-        {
-            Activated = true;
-        }
-
-        public bool IsCollided(Collidable n)
-            => GetBounds().Intersects(n.GetBounds());
-
-        public void Log(StringBuilder sb)
+        public override void Log(StringBuilder sb)
         {
             sb.AppendLine($"Neuron {ID}");
             sb.AppendLine($"  Activated: {Activated}");
@@ -133,6 +76,16 @@ namespace Gridly
                 ? "None" : string.Join(", ", connecting.Select(c => c.ID));
             sb.AppendLine($"  Connected Neurons: {cs}");
             sb.AppendLine();
+        }
+
+        public override void Activate(IConnectable from)
+        {
+            shouldActivate = true;
+        }
+
+        public override void ActivateImmediate()
+        {
+            Activated = true;
         }
     }
 }
