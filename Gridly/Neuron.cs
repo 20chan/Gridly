@@ -11,7 +11,7 @@ namespace Gridly
         public bool Activated { get; private set; }
         private bool shouldActivate = false;
 
-        public Neuron(Vector2 pos, uint id) : base(pos, id)
+        public Neuron(Vector2 pos) : base(pos)
         {
             connecting = new List<IConnectable>();
             couldDisconnected = new List<bool>();

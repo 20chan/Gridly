@@ -252,7 +252,7 @@ namespace Gridly
 
         private void SpawnNeuron(Vector2 position)
         {
-            parts.Add(new Neuron(position, (uint)parts.Count));
+            parts.Add(new Neuron(position));
         }
 
         private void DeletePart(Part n)

@@ -7,16 +7,17 @@ namespace Gridly
 {
     public abstract class Part : Collidable, IConnectable
     {
+        private static uint idCount = 0;
         public uint ID { get; }
         protected static Vector2 Origin = Resources.PartTexture.Bounds.Size.ToVector2() / 2;
 
         protected List<IConnectable> connecting;
         protected List<bool> couldDisconnected;
 
-        public Part(Vector2 pos, uint id)
+        public Part(Vector2 pos)
         {
             Position = pos;
-            ID = id;
+            ID = idCount++;
         }
         
         public override Rectangle GetBounds()
@@ -24,7 +25,6 @@ namespace Gridly
 
         public bool IsCollided(Collidable n)
             => GetBounds().Intersects(n.GetBounds());
-
 
         public void ConnectTo(IConnectable n)
         {
@@ -58,7 +58,6 @@ namespace Gridly
             for (int i = 0; i < connecting.Count; i++)
                 couldDisconnected[i] = Geometry.IsTwoSegmentsInstersect(Position, connecting[i].Position, p1, p2);
         }
-
 
         public abstract void Log(StringBuilder sb);
         public abstract void Activate(IConnectable from);
