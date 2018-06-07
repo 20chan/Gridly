@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -13,13 +14,21 @@ namespace Gridly
         private List<Part> parts;
         private TileMap tilemap;
         EditorState state;
+        PartEditor aboveEditor;
+        PartEditor parentEditor;
+
+        static float synapseInterval = 0.5f;
+        static float remainingDelay = 0f;
+        static int tickCount = 0;
 
         Part connectFrom;
         Part dragging;
         Vector2 disconnectFrom;
+        Circuit editingCircuit;
 
         public PartEditor()
         {
+            parentEditor = null;
             Enabled = true;
             parts = new List<Part>();
             tilemap = new TileMap(parts, 16, 10);
@@ -29,7 +38,81 @@ namespace Gridly
         public void Update()
         {
             UpdatePartInput();
+            UpdateByStates();
             tilemap.UpdatePhysics();
+            UpdateAbove();
+        }
+
+        public void UpdateTick()
+        {
+            remainingDelay -= (float)Times.TotalElapsedSeconds;
+
+            if (remainingDelay <= 0)
+            {
+                Tick();
+                remainingDelay = synapseInterval;
+            }
+        }
+
+        private void Tick()
+        {
+            TickSynapse();
+            UpdateTiles();
+            if (state == EditorState.OTHER_EDITOR_ABOVE)
+                aboveEditor.Tick();
+        }
+
+        protected virtual void UpdatePartInput()
+        {
+            if (IsKeyDown(Keys.Space))
+                ActivateAt(MousePos);
+
+            if (state == EditorState.OTHER_EDITOR_ABOVE)
+                return;
+
+            if (IsRightMouseDown())
+                if (state == EditorState.IDEAL)
+                    SpawnAt(MousePos, IsKeyPressing(Keys.LeftShift));
+
+            if (IsLeftMouseDown())
+                HandleDragConnect();
+
+            if (IsLeftMouseUp())
+                EndDragConnect();
+
+            if (IsKeyDown(Keys.Delete))
+                DeleteAt(MousePos);
+
+            if (IsKeyDown(Keys.Escape))
+                CloseEditor();
+        }
+
+        protected void UpdateByStates()
+        {
+            if (state == EditorState.NEURON_DISCONNECTING)
+                PreviewDisconnects();
+
+            if (state == EditorState.NEURON_DRAGGING)
+                dragging.AddForceTo(MousePos, 0.01f);
+        }
+
+        public void UpdateTiles()
+        {
+            tilemap.TileParts();
+        }
+
+        public void UpdateAbove()
+        {
+            if (state == EditorState.OTHER_EDITOR_ABOVE)
+                aboveEditor.Update();
+        }
+
+        public virtual void TickSynapse()
+        {
+            foreach (var n in parts)
+                n.UpdateSynapse();
+            foreach (var n in parts)
+                n.UpdateState();
         }
 
         public void Draw(SpriteBatch sb)
@@ -41,6 +124,7 @@ namespace Gridly
             foreach (var n in parts)
                 n.Draw(sb);
             DrawPreviews(sb);
+            DrawAbove(sb);
         }
 
         private void DrawPreviews(SpriteBatch sb)
@@ -52,6 +136,16 @@ namespace Gridly
             else if (state == EditorState.NEURON_DISCONNECTING)
             {
                 sb.DrawLine(disconnectFrom, MousePos, 1f, Color.Red);
+            }
+        }
+
+        private void DrawAbove(SpriteBatch sb)
+        {
+            if (state == EditorState.OTHER_EDITOR_ABOVE)
+            {
+                sb.FillRectangle(new Rectangle(0, 0, 1920, 1080),
+                    new Color(Color.Black, 0.5f));
+                aboveEditor.Draw(sb);
             }
         }
 
@@ -81,105 +175,109 @@ namespace Gridly
                 n.DisconnectIntersection(from, to);
         }
 
-        public void TickSynapse()
+        protected void ActivateAt(Vector2 pos)
         {
-            foreach (var n in parts)
-                n.UpdateSynapse();
-            foreach (var n in parts)
-                n.UpdateState();
+            if (IsPartOnPos(pos, out var n))
+            {
+                if (n is Circuit c)
+                {
+                    editingCircuit = c;
+                    state = EditorState.OTHER_EDITOR_ABOVE;
+                    aboveEditor = c.Editor;
+                    aboveEditor.parentEditor = this;
+                }
+                else
+                    n.ActivateImmediate();
+            }
         }
 
-        private void UpdatePartInput()
+        protected void SpawnAt(Vector2 pos, bool isCircuit)
         {
-            if (IsRightMouseDown())
+            if (!IsPartOnPos(pos, out var _))
+            {
+                if (isCircuit)
+                    SpawnCircuit(MousePos);
+                else
+                    SpawnNeuron(MousePos);
+            }
+        }
+
+        protected void DeleteAt(Vector2 pos)
+        {
+            if (state == EditorState.IDEAL)
+                if (IsPartOnPos(MousePos, out var n))
+                    DeletePart(n);
+        }
+
+        protected void HandleDragConnect()
+        {
+            if (IsPartOnPos(MousePos, out var n))
             {
                 if (state == EditorState.IDEAL)
                 {
-                    if (!IsPartOnPos(MousePos, out var _))
+                    if (IsKeyPressing(Keys.LeftShift))
                     {
-                        if (IsKeyPressing(Keys.LeftShift))
-                            SpawnCircuit(MousePos);
-                        else
-                            SpawnNeuron(MousePos);
+                        connectFrom = n;
+                        state = EditorState.NEURON_CONNECTING;
+                    }
+                    else
+                    {
+                        dragging = n;
+                        state = EditorState.NEURON_DRAGGING;
                     }
                 }
+                else if (state == EditorState.NEURON_CONNECTING)
+                {
+                    connectFrom.ConnectTo(n);
+                    connectFrom = null;
+                    state = EditorState.IDEAL;
+                }
             }
-
-            if (IsLeftMouseDown())
+            else if (IsKeyPressing(Keys.LeftControl))
             {
-                if (IsPartOnPos(MousePos, out var n))
-                {
-                    if (state == EditorState.IDEAL)
-                    {
-                        if (IsKeyPressing(Keys.LeftShift))
-                        {
-                            connectFrom = n;
-                            state = EditorState.NEURON_CONNECTING;
-                        }
-                        else
-                        {
-                            dragging = n;
-                            state = EditorState.NEURON_DRAGGING;
-                        }
-                    }
-                    else if (state == EditorState.NEURON_CONNECTING)
-                    {
-                        connectFrom.ConnectTo(n);
-                        connectFrom = null;
-                        state = EditorState.IDEAL;
-                    }
-                }
-                else if (IsKeyPressing(Keys.LeftControl))
-                {
-                    disconnectFrom = MousePos;
-                    state = EditorState.NEURON_DISCONNECTING;
-                }
+                disconnectFrom = MousePos;
+                state = EditorState.NEURON_DISCONNECTING;
             }
+        }
 
+        protected void EndDragConnect()
+        {
             if (state == EditorState.NEURON_DRAGGING)
             {
-                dragging.AddForceTo(MousePos, 0.01f);
+                dragging = null;
+                state = EditorState.IDEAL;
             }
-
-            if (state == EditorState.NEURON_DISCONNECTING)
+            else if (state == EditorState.NEURON_DISCONNECTING)
             {
-                foreach (var n in parts)
-                {
-                    n.PreviewDisconnect(disconnectFrom, MousePos);
-                }
-            }
-
-            if (IsLeftMouseUp())
-            {
-                if (state == EditorState.NEURON_DRAGGING)
-                {
-                    dragging = null;
-                    state = EditorState.IDEAL;
-                }
-                else if (state == EditorState.NEURON_DISCONNECTING)
-                {
-                    DisconnectIntersection(disconnectFrom, MousePos);
-                    state = EditorState.IDEAL;
-                }
-            }
-
-            if (IsKeyDown(Keys.Space))
-            {
-                if (IsPartOnPos(MousePos, out var n))
-                {
-                    n.ActivateImmediate();
-                }
-            }
-
-            if (IsKeyDown(Keys.Delete))
-            {
-                if (state == EditorState.IDEAL)
-                    if (IsPartOnPos(MousePos, out var n))
-                        DeletePart(n);
+                DisconnectIntersection(disconnectFrom, MousePos);
+                state = EditorState.IDEAL;
             }
         }
 
-        private bool IsPartOnPos(Vector2 pos, out Part part)
+        protected void PreviewDisconnects()
+        {
+            foreach (var n in parts)
+            {
+                n.PreviewDisconnect(disconnectFrom, MousePos);
+            }
+        }
+
+        protected void CloseEditor()
+        {
+            if (state == EditorState.IDEAL)
+            {
+                parentEditor?.AboveClosed();
+            }
+        }
+
+        protected void AboveClosed()
+        {
+            editingCircuit = null;
+            aboveEditor = null;
+            state = EditorState.IDEAL;
+        }
+
+        protected bool IsPartOnPos(Vector2 pos, out Part part)
         {
             foreach (var n in parts)
             {

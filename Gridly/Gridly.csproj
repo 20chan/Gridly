@@ -44,13 +44,15 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BasePartEditor.cs" />
+    <Compile Include="DefaultPartEditor.cs" />
     <Compile Include="Circuit.cs" />
+    <Compile Include="CircuitEditor.cs" />
     <Compile Include="Geometry.cs" />
     <Compile Include="IConnectable.cs" />
     <Compile Include="Inputs.cs" />
     <Compile Include="Part.cs" />
     <Compile Include="PartEditor.cs" />
+    <Compile Include="Times.cs" />
     <Compile Include="UIHelper.cs" />
     <Compile Include="Collidable.cs" />
     <Compile Include="MainScene.cs" />

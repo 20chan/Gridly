@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Gridly
 {
-    public class BasePartEditor : PartEditor
+    public class DefaultPartEditor : PartEditor
     {
 
     }

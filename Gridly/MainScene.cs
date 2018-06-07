@@ -14,9 +14,6 @@ namespace Gridly
         Random random;
 
         EditorState state;
-        float synapseInterval = 0.5f;
-        float remainingDelay = 0f;
-        int tickCount = 0;
         bool isUIHandledInput;
         Matrix scale;
         PartEditor baseEditor;
@@ -41,7 +38,7 @@ namespace Gridly
             random = new Random();
             guiManager = new GUIManager();
             scale = Matrix.CreateScale(2);
-            baseEditor = new BasePartEditor();
+            baseEditor = new DefaultPartEditor();
 
             base.Initialize();
         }
@@ -63,19 +60,12 @@ namespace Gridly
 
         protected override void Update(GameTime gameTime)
         {
-            remainingDelay -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (remainingDelay <= 0)
-            {
-                baseEditor.TickSynapse();
-                remainingDelay = synapseInterval;
-                Console.WriteLine($"Laggy?: {gameTime.IsRunningSlowly}");
-            }
-
             Inputs.Update();
+            Times.Update(gameTime);
 
             isUIHandledInput = guiManager.HandleInput();
             UpdateUIEvent();
+            baseEditor.UpdateTick();
             baseEditor.Update();
 
             Inputs.LateUpdate();

@@ -8,5 +8,6 @@ namespace Gridly
         NEURON_CONNECTING,
         NEURON_DRAGGING,
         NEURON_DISCONNECTING,
+        OTHER_EDITOR_ABOVE,
     }
 }
