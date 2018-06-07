@@ -9,11 +9,17 @@ namespace Gridly
     public class Neuron : Part
     {
         public bool Activated { get; private set; }
+        public Color DefaultColor { get; set; }
         private bool shouldActivate = false;
+
+        public bool DisplayNumber { get; set; }
+        public int Number { get; set; }
 
         public Neuron(Vector2 pos) : base(pos)
         {
             Activated = false;
+            DefaultColor = Color.White;
+            DisplayNumber = false;
         }
 
         public override void UpdateSynapse()
@@ -47,12 +53,20 @@ namespace Gridly
 
         public override void Draw(SpriteBatch sb)
         {
-            sb.Draw(
-                Resources.PartTexture,
-                position: Position,
-                origin: Origin,
-                color: Activated ? Color.Blue : Color.White,
-                layerDepth: .5f);
+            BackColor = Activated ? Color.Blue : DefaultColor;
+            base.Draw(sb);
+            DrawNumber(sb);
+        }
+
+        public void DrawNumber(SpriteBatch sb)
+        {
+            if (DisplayNumber)
+            {
+                sb.DrawString(Resources.DefaultFont,
+                    Number.ToString(),
+                    new Vector2(Position.X + 10, Position.Y),
+                    Color.Black);
+            }
         }
 
         public override void Log(StringBuilder sb)

@@ -16,6 +16,7 @@ namespace Gridly
             connectedInputs = new List<IConnectable>();
             connectedOutputs = new List<IConnectable>();
             Editor = new CircuitEditor(this);
+            BackColor = Color.Purple;
         }
 
         public override void ConnectTo(IConnectable n)
@@ -68,16 +69,6 @@ namespace Gridly
                 connectedOutputs[idx].Activate(this);
         }
 
-        public override void Draw(SpriteBatch sb)
-        {
-            sb.Draw(
-                   Resources.PartTexture,
-                   position: Position,
-                   origin: Origin,
-                   color: Color.Purple,
-                   layerDepth: .5f);
-        }
-
         public override void DrawSynapse(SpriteBatch sb)
         {
             for (int i = 0; i < connecting.Count; i++)
@@ -86,7 +77,7 @@ namespace Gridly
                 sb.DrawLine(Position, n.Position, 2f,
                     couldDisconnected[i]
                     ? Color.Red
-                    : n is Circuit ? Color.Orange : Color.Blue, 0.5f);
+                    : n is Circuit ? Color.Orange : Color.LightBlue, 0.5f);
             }
         }
     }

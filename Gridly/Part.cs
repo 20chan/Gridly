@@ -11,6 +11,7 @@ namespace Gridly
         public uint ID { get; }
         protected static Vector2 Origin = Resources.PartTexture.Bounds.Size.ToVector2() / 2;
 
+        protected Color BackColor;
         protected List<IConnectable> connecting;
         protected List<bool> couldDisconnected;
 
@@ -19,6 +20,7 @@ namespace Gridly
             Position = pos;
             ID = idCount++;
 
+            BackColor = Color.White;
             connecting = new List<IConnectable>();
             couldDisconnected = new List<bool>();
             friction = .1f;
@@ -83,6 +85,14 @@ namespace Gridly
                 sb.DrawLine(ratio80, n.Position, 2f, Color.Gray, 0.3f);
             }
         }
-        public virtual void Draw(SpriteBatch sb) { }
+        public virtual void Draw(SpriteBatch sb)
+        {
+            sb.Draw(
+                Resources.PartTexture,
+                position: Position,
+                origin: Origin,
+                color: BackColor,
+                layerDepth: .5f);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 using static Gridly.Inputs;
@@ -41,11 +42,21 @@ namespace Gridly
             if (IsKeyDown(Keys.I))
                 if (IsPartOnPos(MousePos, out var p))
                     if (p is Neuron n)
+                    {
+                        n.DefaultColor = Color.Orange;
+                        n.DisplayNumber = true;
+                        n.Number = inputNeurons.Count;
                         inputNeurons.Add(n);
+                    }
             if (IsKeyDown(Keys.O))
                 if (IsPartOnPos(MousePos, out var p))
                     if (p is Neuron n)
+                    {
+                        n.DefaultColor = Color.LightBlue;
+                        n.DisplayNumber = true;
+                        n.Number = outputNeurons.Count;
                         outputNeurons.Add(n);
+                    }
         }
     }
 }
