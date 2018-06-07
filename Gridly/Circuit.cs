@@ -18,6 +18,13 @@ namespace Gridly
             inner = new InnerCircuit();
         }
 
+        public override void ConnectTo(IConnectable n)
+        {
+            base.ConnectTo(n);
+
+            connectedOutputs.Add(n);
+        }
+
         public void ConnectFrom(IConnectable from)
         {
             connectedInputs.Add(from);
@@ -77,10 +84,28 @@ namespace Gridly
                 var n = connecting[i];
                 sb.DrawLine(Position, n.Position, 2f,
                     couldDisconnected[i]
-                    ? Color.Yellow
+                    ? Color.Red
                     : n is Circuit ? Color.Orange : Color.Blue, 0.5f);
             }
         }
+
+        public void Add(Part p)
+            => inner.Add(p);
+
+        public void SetInput(Neuron n)
+            => inner.SetInput(n);
+
+        public void SetOutput(Neuron n)
+            => inner.SetOutput(n);
+
+        public bool IsPartOnPos(Vector2 pos, out Part part)
+            => inner.IsPartOnPos(pos, out part);
+
+        public void DrawInner(SpriteBatch sb)
+            => inner.Draw(sb);
+
+        public void UpdateInnerPhysics()
+            => inner.UpdatePhysics();
 
         class InnerCircuit
         {
@@ -106,7 +131,7 @@ namespace Gridly
             public void ActivateInput(int idx)
             {
                 if (inputNeurons.Count > idx)
-                    inputNeurons[idx].ActivateImmediate();
+                    inputNeurons[idx].Activate(null);
             }
 
             public bool IsOutputActivated(int idx)
@@ -114,6 +139,56 @@ namespace Gridly
                 if (outputNeurons.Count > idx)
                     return outputNeurons[idx].Activated;
                 return false;
+            }
+
+            public void Add(Part p)
+            {
+                parts.Add(p);
+            }
+
+            public void Remove(Part p)
+            {
+                parts.Remove(p);
+            }
+
+            public void SetInput(Neuron n)
+            {
+                inputNeurons.Add(n);
+            }
+
+            public void SetOutput(Neuron n)
+            {
+                outputNeurons.Add(n);
+            }
+
+            public bool IsPartOnPos(Vector2 pos, out Part part)
+            {
+                foreach (var n in parts)
+                {
+                    if (n.GetBounds().Contains(pos))
+                    {
+                        part = n;
+                        return true;
+                    }
+                }
+                part = null;
+                return false;
+            }
+
+            public void Draw(SpriteBatch sb)
+            {
+                foreach (var n in parts)
+                    n.DrawSynapse(sb);
+                foreach (var n in parts)
+                    n.DrawUpperSynapse(sb);
+                foreach (var n in parts)
+                    n.Draw(sb);
+            }
+
+            public void UpdatePhysics()
+            {
+                foreach (var n in parts)
+                    n.UpdatePhysics();
             }
         }
     }

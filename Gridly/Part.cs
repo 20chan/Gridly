@@ -30,7 +30,7 @@ namespace Gridly
         public bool IsCollided(Collidable n)
             => GetBounds().Intersects(n.GetBounds());
 
-        public void ConnectTo(IConnectable n)
+        public virtual void ConnectTo(IConnectable n)
         {
             if (!connecting.Contains(n))
             {

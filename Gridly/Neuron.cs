@@ -40,7 +40,7 @@ namespace Gridly
                 var n = connecting[i];
                 sb.DrawLine(Position, n.Position, 2f,
                     couldDisconnected[i]
-                    ? Color.Yellow
+                    ? Color.Red
                     : n is Circuit ? Color.Orange : Color.White, 0.5f);
             }
         }

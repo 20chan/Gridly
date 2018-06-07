@@ -29,6 +29,7 @@ namespace Gridly
         Part connectFrom;
         Part dragging;
         Vector2 disconnectFrom;
+        Circuit editingCircuit;
 
         public MainScene()
         {
@@ -71,9 +72,6 @@ namespace Gridly
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
             remainingDelay -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             if (remainingDelay <= 0)
@@ -94,6 +92,8 @@ namespace Gridly
             UpdateUIEvent();
             UpdatePartInput();
             tilemap.UpdatePhysics();
+            if (!state.IsNeuralEditor())
+                editingCircuit.UpdateInnerPhysics();
 
             if (IsKeyDown(Keys.Enter))
             {
@@ -139,6 +139,16 @@ namespace Gridly
             foreach (var n in parts)
                 n.Draw(spriteBatch);
             DrawPreviews();
+            if (MainState.INNER_CIRCUIT_IDEAL <= state
+                && state <= MainState.INNER_CIRCUIT_DISCONNECTING)
+            {
+                spriteBatch.FillRectangle(
+                    new Rectangle(0, 0, 1920, 1080),
+                    new Color(Color.Black, .5f));
+
+                editingCircuit.DrawInner(spriteBatch);
+                DrawCircuitPreview();
+            }
             guiManager.DrawUI(spriteBatch);
 
             spriteBatch.End();
@@ -149,12 +159,18 @@ namespace Gridly
         {
             if (state == MainState.NEURON_CONNECTING)
             {
-                spriteBatch.DrawLine(connectFrom.Position, curtMousePos, 1f, Color.Blue);
+                spriteBatch.DrawLine(connectFrom.Position, curtMousePos, 1f, Color.White);
             }
             else if (state == MainState.NEURON_DISCONNECTING)
             {
                 spriteBatch.DrawLine(disconnectFrom, curtMousePos, 1f, Color.Red);
             }
+        }
+
+        private void DrawCircuitPreview()
+        {
+            if (state == MainState.INNER_CIRCUIT_CONNECTING)
+                spriteBatch.DrawLine(connectFrom.Position, curtMousePos, 1f, Color.White);
         }
 
         private string Log()
@@ -174,47 +190,83 @@ namespace Gridly
         {
             if (IsRightMouseDown())
             {
-                if (!IsPartOnPos(curtMousePos, out var _))
+                if (state == MainState.IDEAL)
                 {
-                    if (IsKeyPressing(Keys.LeftShift))
-                        SpawnCircuit(curtMousePos);
-                    else
-                        SpawnNeuron(curtMousePos);
+                    if (!IsPartOnPos(curtMousePos, out var _))
+                    {
+                        if (IsKeyPressing(Keys.LeftShift))
+                            SpawnCircuit(curtMousePos);
+                        else
+                            SpawnNeuron(curtMousePos);
+                    }
+                }
+                else if (state == MainState.INNER_CIRCUIT_IDEAL)
+                {
+                    if (!editingCircuit.IsPartOnPos(curtMousePos, out var _))
+                        editingCircuit.Add(new Neuron(curtMousePos));
                 }
             }
 
             if (IsLeftMouseDown())
             {
-                if (IsPartOnPos(curtMousePos, out var n))
+                if (state.IsNeuralEditor())
                 {
-                    if (state == MainState.IDEAL)
+                    if (IsPartOnPos(curtMousePos, out var n))
                     {
-                        if (IsKeyPressing(Keys.LeftShift))
+                        if (state == MainState.IDEAL)
                         {
-                            connectFrom = n;
-                            state = MainState.NEURON_CONNECTING;
+                            if (IsKeyPressing(Keys.LeftShift))
+                            {
+                                connectFrom = n;
+                                state = MainState.NEURON_CONNECTING;
+                            }
+                            else
+                            {
+                                dragging = n;
+                                state = MainState.NEURON_DRAGGING;
+                            }
                         }
-                        else
+                        else if (state == MainState.NEURON_CONNECTING)
                         {
-                            dragging = n;
-                            state = MainState.NEURON_DRAGGING;
+                            connectFrom.ConnectTo(n);
+                            connectFrom = null;
+                            state = MainState.IDEAL;
                         }
                     }
-                    else if (state == MainState.NEURON_CONNECTING)
+                    else if (IsKeyPressing(Keys.LeftControl))
                     {
-                        connectFrom.ConnectTo(n);
-                        connectFrom = null;
-                        state = MainState.IDEAL;
+                        disconnectFrom = curtMousePos;
+                        state = MainState.NEURON_DISCONNECTING;
                     }
                 }
-                else if (IsKeyPressing(Keys.LeftControl))
+                else
                 {
-                    disconnectFrom = curtMousePos;
-                    state = MainState.NEURON_DISCONNECTING;
+                    if (editingCircuit.IsPartOnPos(curtMousePos, out var n))
+                    {
+                        if (state == MainState.INNER_CIRCUIT_IDEAL)
+                        {
+                            if (IsKeyPressing(Keys.LeftShift))
+                            {
+                                connectFrom = n;
+                                state = MainState.INNER_CIRCUIT_CONNECTING;
+                            }
+                            else
+                            {
+                                dragging = n;
+                                state = MainState.INNER_CIRCUIT_DRAGGING;
+                            }
+                        }
+                        else if (state == MainState.INNER_CIRCUIT_CONNECTING)
+                        {
+                            connectFrom.ConnectTo(n);
+                            connectFrom = null;
+                            state = MainState.INNER_CIRCUIT_IDEAL;
+                        }
+                    }
                 }
             }
 
-            if (state == MainState.NEURON_DRAGGING)
+            if (state == MainState.NEURON_DRAGGING || state == MainState.INNER_CIRCUIT_DRAGGING)
             {
                 dragging.AddForceTo(curtMousePos, 0.01f);
             }
@@ -239,20 +291,46 @@ namespace Gridly
                     DisconnectIntersection(disconnectFrom, curtMousePos);
                     state = MainState.IDEAL;
                 }
+                else if (state == MainState.INNER_CIRCUIT_DRAGGING)
+                {
+                    dragging = null;
+                    state = MainState.INNER_CIRCUIT_IDEAL;
+                }
             }
 
             if (IsKeyDown(Keys.Space))
             {
                 if (IsPartOnPos(curtMousePos, out var n))
                 {
+                    if (n is Circuit c)
+                    {
+                        editingCircuit = c;
+                        state = MainState.INNER_CIRCUIT_IDEAL;
+                    }
                     n.ActivateImmediate();
                 }
             }
 
             if (IsKeyDown(Keys.Delete))
+            {
                 if (state == MainState.IDEAL)
                     if (IsPartOnPos(curtMousePos, out var n))
                         DeletePart(n);
+            }
+
+            if (IsKeyDown(Keys.Escape))
+                if (state == MainState.INNER_CIRCUIT_IDEAL)
+                    state = MainState.IDEAL;
+
+            if (state == MainState.INNER_CIRCUIT_IDEAL)
+            {
+                if (IsKeyDown(Keys.I))
+                    if (editingCircuit.IsPartOnPos(curtMousePos, out var n))
+                        editingCircuit.SetInput(n as Neuron);
+                if (IsKeyDown(Keys.O))
+                    if (editingCircuit.IsPartOnPos(curtMousePos, out var n))
+                        editingCircuit.SetOutput(n as Neuron);
+            }
         }
 
         private void SpawnNeuron(Vector2 position)
