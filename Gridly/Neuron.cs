@@ -13,10 +13,7 @@ namespace Gridly
 
         public Neuron(Vector2 pos) : base(pos)
         {
-            connecting = new List<IConnectable>();
-            couldDisconnected = new List<bool>();
             Activated = false;
-            friction = .1f;
         }
 
         public override void UpdateSynapse()
@@ -42,18 +39,9 @@ namespace Gridly
             {
                 var n = connecting[i];
                 sb.DrawLine(Position, n.Position, 2f,
-                    couldDisconnected[i] ? Color.Yellow : Color.Blue, 0.5f);
-            }
-        }
-
-        public override void DrawUpperSynapse(SpriteBatch sb)
-        {
-            foreach (var n in connecting)
-            {
-                var ratio80 = new Vector2(
-                    .2f * Position.X + .8f * n.Position.X,
-                    .2f * Position.Y + .8f * n.Position.Y);
-                sb.DrawLine(ratio80, n.Position, 2f, Color.Gray, 0.3f);
+                    couldDisconnected[i]
+                    ? Color.Yellow
+                    : n is Circuit ? Color.Orange : Color.White, 0.5f);
             }
         }
 

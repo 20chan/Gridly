@@ -175,7 +175,12 @@ namespace Gridly
             if (IsRightMouseDown())
             {
                 if (!IsPartOnPos(curtMousePos, out var _))
-                    SpawnNeuron(curtMousePos);
+                {
+                    if (IsKeyPressing(Keys.LeftShift))
+                        SpawnCircuit(curtMousePos);
+                    else
+                        SpawnNeuron(curtMousePos);
+                }
             }
 
             if (IsLeftMouseDown())
@@ -253,6 +258,11 @@ namespace Gridly
         private void SpawnNeuron(Vector2 position)
         {
             parts.Add(new Neuron(position));
+        }
+
+        private void SpawnCircuit(Vector2 position)
+        {
+            parts.Add(new Circuit(position));
         }
 
         private void DeletePart(Part n)

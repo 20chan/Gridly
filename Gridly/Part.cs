@@ -18,6 +18,10 @@ namespace Gridly
         {
             Position = pos;
             ID = idCount++;
+
+            connecting = new List<IConnectable>();
+            couldDisconnected = new List<bool>();
+            friction = .1f;
         }
         
         public override Rectangle GetBounds()
@@ -30,6 +34,8 @@ namespace Gridly
         {
             if (!connecting.Contains(n))
             {
+                if (n is Circuit c)
+                    c.ConnectFrom(this);
                 connecting.Add(n);
                 couldDisconnected.Add(false);
             }
@@ -39,6 +45,8 @@ namespace Gridly
         {
             if (connecting.Contains(n))
             {
+                if (n is Circuit c)
+                    c.DisconnectFrom(this);
                 var idx = connecting.IndexOf(n);
                 connecting.RemoveAt(idx);
                 couldDisconnected.RemoveAt(idx);
@@ -65,7 +73,16 @@ namespace Gridly
         public abstract void UpdateSynapse();
         public abstract void UpdateState();
         public virtual void DrawSynapse(SpriteBatch sb) { }
-        public virtual void DrawUpperSynapse(SpriteBatch sb) { }
+        public virtual void DrawUpperSynapse(SpriteBatch sb)
+        {
+            foreach (var n in connecting)
+            {
+                var ratio80 = new Vector2(
+                    .2f * Position.X + .8f * n.Position.X,
+                    .2f * Position.Y + .8f * n.Position.Y);
+                sb.DrawLine(ratio80, n.Position, 2f, Color.Gray, 0.3f);
+            }
+        }
         public virtual void Draw(SpriteBatch sb) { }
     }
 }
