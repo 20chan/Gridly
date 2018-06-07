@@ -54,7 +54,7 @@ namespace Gridly
 
         public override void UpdateState()
         {
-            Editor.TickSynapse();
+            // Editor.TickSynapse();
         }
 
         public override void UpdateSynapse()

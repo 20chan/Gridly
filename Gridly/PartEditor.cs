@@ -14,6 +14,7 @@ namespace Gridly
         private List<Part> parts;
         private TileMap tilemap;
         EditorState state;
+        List<PartEditor> childEditors;
         PartEditor aboveEditor;
         PartEditor parentEditor;
 
@@ -28,6 +29,7 @@ namespace Gridly
 
         public PartEditor()
         {
+            childEditors = new List<PartEditor>();
             parentEditor = null;
             Enabled = true;
             parts = new List<Part>();
@@ -39,8 +41,8 @@ namespace Gridly
         {
             UpdatePartInput();
             UpdateByStates();
-            tilemap.UpdatePhysics();
             UpdateAbove();
+            tilemap.UpdatePhysics();
         }
 
         public void UpdateTick()
@@ -58,8 +60,8 @@ namespace Gridly
         {
             TickSynapse();
             UpdateTiles();
-            if (state == EditorState.OTHER_EDITOR_ABOVE)
-                aboveEditor.Tick();
+            foreach (var c in childEditors)
+                c.Tick();
         }
 
         protected virtual void UpdatePartInput()
@@ -156,7 +158,9 @@ namespace Gridly
 
         public void SpawnCircuit(Vector2 pos)
         {
-            parts.Add(new Circuit(pos));
+            var c = new Circuit(pos);
+            parts.Add(c);
+            childEditors.Add(c.Editor);
         }
 
         private void DeletePart(Part n)
@@ -167,6 +171,8 @@ namespace Gridly
                 neu.Disconnect(n);
             }
             parts.Remove(n);
+            if (n is Circuit c)
+                childEditors.Remove(c.Editor);
         }
 
         private void DisconnectIntersection(Vector2 from, Vector2 to)
