@@ -6,12 +6,12 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Gridly
 {
-    public class Neuron : Collidable
+    public class Neuron : Collidable, IConnectable
     {
-        public readonly uint ID;
+        public uint ID { get; }
         private static Vector2 Origin = Resources.NeuronTexture.Bounds.Size.ToVector2() / 2;
 
-        private List<Neuron> connecting;
+        private List<IConnectable> connecting;
         private List<bool> couldDisconnected;
 
         public bool Activated { get; private set; }
@@ -21,7 +21,7 @@ namespace Gridly
         {
             ID = id;
             Position = pos;
-            connecting = new List<Neuron>();
+            connecting = new List<IConnectable>();
             couldDisconnected = new List<bool>();
             Activated = false;
             friction = .1f;
@@ -31,7 +31,7 @@ namespace Gridly
         {
             if (Activated)
                 foreach (var n in connecting)
-                    n.Activate();
+                    n.Activate(this);
             Activated = false;
         }
 
@@ -78,7 +78,7 @@ namespace Gridly
                 layerDepth: .5f);
         }
 
-        public void ConnectTo(Neuron n)
+        public void ConnectTo(IConnectable n)
         {
             if (!connecting.Contains(n))
             {
@@ -87,7 +87,7 @@ namespace Gridly
             }
         }
 
-        public void Disconnect(Neuron n)
+        public void Disconnect(IConnectable n)
         {
             if (connecting.Contains(n))
             {
@@ -111,7 +111,7 @@ namespace Gridly
                 couldDisconnected[i] = Geometry.IsTwoSegmentsInstersect(Position, connecting[i].Position, p1, p2);
         }
 
-        public void Activate()
+        public void Activate(IConnectable from)
         {
             shouldActivate = true;
         }
@@ -121,7 +121,7 @@ namespace Gridly
             Activated = true;
         }
 
-        public bool IsCollided(Neuron n)
+        public bool IsCollided(Collidable n)
             => GetBounds().Intersects(n.GetBounds());
 
         public void Log(StringBuilder sb)

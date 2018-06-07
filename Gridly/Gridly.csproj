@@ -45,6 +45,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Geometry.cs" />
+    <Compile Include="IConnectable.cs" />
     <Compile Include="UIHelper.cs" />
     <Compile Include="Collidable.cs" />
     <Compile Include="MainScene.cs" />
