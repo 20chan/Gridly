@@ -299,6 +299,6 @@ namespace Gridly
         }
 
         protected abstract JObject Serialize();
-        protected abstract void Deserialize(JObject arr);
+        public abstract void Deserialize(JObject arr);
     }
 }

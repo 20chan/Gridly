@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Xna.Framework;
@@ -72,9 +73,38 @@ namespace Gridly
         internal IEnumerable<uint> GetPartsIDs()
             => parts.Select(n => n.ID);
 
-        protected override void Deserialize(JObject arr)
+        public override void Deserialize(JObject obj)
         {
+            DeserializeParts((JArray)obj["Parts"], out var refIds);
 
+            foreach (int n in obj["Inputs"])
+                inputNeurons.Add((Neuron)parts[Array.IndexOf(refIds, n)]);
+            foreach (int n in obj["Outputs"])
+                outputNeurons.Add((Neuron)parts[Array.IndexOf(refIds, n)]);
+        }
+
+        public void DeserializeParts(JArray arr, out int[] refIDs)
+        {
+            refIDs = new int[arr.Count];
+
+            parts.Clear();
+            int i = 0;
+            foreach (JObject p in arr)
+            {
+                Part part;
+                if ((int)p["Type"] == 0)
+                    part = new Circuit();
+                else
+                    part = new Neuron();
+
+                refIDs[i] = (int)p["ID"];
+                parts.Add(part);
+                i++;
+            }
+            for (i = 0; i < parts.Count; i++)
+            {
+                parts[i].Deserialize((JObject)arr[i], refIDs, parts.ToArray());
+            }
         }
 
         protected override JObject Serialize()

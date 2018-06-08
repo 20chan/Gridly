@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace Gridly
 {
@@ -19,6 +20,11 @@ namespace Gridly
             connectedOutputs = new List<IConnectable>();
             Editor = new CircuitEditor(this);
             BackColor = Color.Purple;
+        }
+
+        public Circuit() : this(Vector2.Zero)
+        {
+            Initialized = false;
         }
 
         public override void ConnectTo(IConnectable n)
@@ -83,9 +89,16 @@ namespace Gridly
             }
         }
 
-        public override void Deserialize(JObject obj)
+        public override void Deserialize(JObject obj, int[] orgIDs, Part[] parts)
         {
-            throw new System.NotImplementedException();
+            var conns = obj["Connecting"].ToObject<int[]>();
+            foreach (var c in conns)
+            {
+                var idx = Array.IndexOf(orgIDs, c);
+                connecting.Add(parts[idx]);
+            }
+            Editor.Deserialize(obj);
+            Initialized = true;
         }
 
         public override JObject Serialize()

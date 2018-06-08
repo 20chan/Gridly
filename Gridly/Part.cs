@@ -16,6 +16,8 @@ namespace Gridly
         protected List<IConnectable> connecting;
         protected List<bool> couldDisconnected;
 
+        public bool Initialized { get; protected set; }
+
         public Part(Vector2 pos)
         {
             Position = pos;
@@ -25,6 +27,7 @@ namespace Gridly
             connecting = new List<IConnectable>();
             couldDisconnected = new List<bool>();
             friction = .1f;
+            Initialized = true;
         }
         
         public override Rectangle GetBounds()
@@ -69,25 +72,14 @@ namespace Gridly
             for (int i = 0; i < connecting.Count; i++)
                 couldDisconnected[i] = Geometry.IsTwoSegmentsInstersect(Position, connecting[i].Position, p1, p2);
         }
-
-        public static Part FromJson(JObject obj)
-        {
-            Part result = null;
-            if (obj["Type"].ToObject<int>() == 0)
-                result = new Neuron(Vector2.Zero);
-            else
-                result = new Circuit(Vector2.Zero);
-            result.Deserialize(obj);
-            return result;
-        }
-
+        
         public abstract void Log(StringBuilder sb);
         public abstract void Activate(IConnectable from);
         public abstract void ActivateImmediate();
         public abstract void UpdateSynapse();
         public abstract void UpdateState();
         public abstract JObject Serialize();
-        public abstract void Deserialize(JObject obj);
+        public abstract void Deserialize(JObject obj, int[] orgIDs, Part[] parts);
         public virtual void DrawSynapse(SpriteBatch sb) { }
         public virtual void DrawUpperSynapse(SpriteBatch sb)
         {

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
@@ -21,6 +22,11 @@ namespace Gridly
             Activated = false;
             DefaultColor = Color.White;
             DisplayNumber = false;
+        }
+
+        public Neuron() : this(Vector2.Zero)
+        {
+            Initialized = false;
         }
 
         public override void UpdateSynapse()
@@ -91,10 +97,17 @@ namespace Gridly
             Activated = true;
         }
 
-        public override void Deserialize(JObject obj)
+        public override void Deserialize(JObject obj, int[] orgIDs, Part[] parts)
         {
-            Activated = obj["Activated"].ToObject<bool>();
-            
+            Activated = (bool)obj["Activated"];
+            var conns = obj["Connecting"].ToObject<int[]>();
+            foreach (var c in conns)
+            {
+                var idx = Array.IndexOf(orgIDs, c);
+                connecting.Add(parts[idx]);
+            }
+
+            Initialized = true;
         }
 
         public override JObject Serialize()

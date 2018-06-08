@@ -9,7 +9,7 @@ namespace Gridly
             throw new System.NotImplementedException();
         }
 
-        protected override void Deserialize(JObject arr)
+        public override void Deserialize(JObject arr)
         {
             throw new System.NotImplementedException();
         }
