@@ -72,13 +72,18 @@ namespace Gridly
         internal IEnumerable<uint> GetPartsIDs()
             => parts.Select(n => n.ID);
 
-        public override void Deserialize(JObject arr)
+        protected override void Deserialize(JObject arr)
         {
 
         }
 
-        public override JObject Serialize()
-            => self.Serialize();
+        protected override JObject Serialize()
+        {
+            var res = self.Serialize();
+            // 루트 회로의 연결들은 비어있어야 한다
+            res["Connecting"] = JArray.FromObject(new int[0]);
+            return res;
+        }
 
         public JArray SerializeParts()
         {

@@ -298,7 +298,7 @@ namespace Gridly
             return false;
         }
 
-        public abstract JObject Serialize();
-        public abstract void Deserialize(JObject arr);
+        protected abstract JObject Serialize();
+        protected abstract void Deserialize(JObject arr);
     }
 }

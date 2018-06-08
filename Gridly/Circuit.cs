@@ -95,9 +95,9 @@ namespace Gridly
                 { "ID", ID },
                 { "Type", 1 },
                 { "Connecting", JArray.FromObject(connecting.Select(c => c.ID)) },
-                { "Parts", Editor.SerializeParts()},
                 { "Inputs", JArray.FromObject(Editor.GetInputIDs()) },
                 { "Outputs", JArray.FromObject(Editor.GetOutputIDs()) },
+                { "Parts", Editor.SerializeParts()},
             };
         }
     }
