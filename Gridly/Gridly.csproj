@@ -44,6 +44,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BuiltinCircuit.cs" />
     <Compile Include="DefaultPartEditor.cs" />
     <Compile Include="Circuit.cs" />
     <Compile Include="CircuitEditor.cs" />

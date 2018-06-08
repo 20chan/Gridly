@@ -310,6 +310,8 @@ namespace Gridly
                     childEditors.Add(c.Editor);
                 }
             }
+            if (IsKeyDown(Keys.A))
+                parts.Add(BuiltinCircuit.AndCircuit(MousePos));
         }
 
         protected bool IsPartOnPos(Vector2 pos, out Part part)
