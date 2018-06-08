@@ -14,6 +14,9 @@
     "Type": 1,
     "Activated": true,
     "Connecting": [1, 2],
+    "Parts": [
+        {}, {}, {}
+    ],
     "Inputs": [3, 4],
     "Outputs": [5, 6]
 }
@@ -22,9 +25,10 @@
 - `ID` : 레퍼런스 ID
 - `Type` : `0`이면 뉴런, `1`이면 회로
 - `Activated` (뉴런만) : 활성화되어있는가
-- `Connecting` : 연결된 파트들의 배열
-- `Inputs` (회로만) : 입력 뉴런들
-- `Outputs` (회로만) : 출력 뉴런들
+- `Connecting` : 연결된 파트들의 ID 배열
+- `Parts` (회로만) : 속한 파트들의 배열
+- `Inputs` (회로만) : 입력 뉴런들의 ID
+- `Outputs` (회로만) : 출력 뉴런들의 ID
 
 하나의 회로를 직렬화한 전체 JSON 파일은 파트들의 배열로 나타내어진다.
 
@@ -56,6 +60,27 @@ i*(5) <-> o (6) --> o*(7)
         "ID": 1,
         "Type": 1,
         "Connecting": [2, 4],
+        "Parts": [
+            {
+                "ID": 5,
+                "Type": 0,
+                "Activated": true,
+                "Connecting": [6]
+            },
+            {
+                "ID": 6,
+                "Type": 0,
+                "Depth": 1,
+                "Activated": false,
+                "Connecting": [5, 7]
+            },
+            {
+                "ID": 7,
+                "Type": 0,
+                "Activated": true,
+                "Connecting": []
+            }
+        ],
         "Inputs": [5],
         "Outputs": [6, 7]
     },
@@ -76,24 +101,6 @@ i*(5) <-> o (6) --> o*(7)
         "Type": 0,
         "Activated": false,
         "Connecting": []
-    },
-    {
-        "ID": 5,
-        "Type": 0,
-        "Activated": true,
-        "Connecting": [6]
-    },
-    {
-        "ID": 6,
-        "Type": 0,
-        "Activated": false,
-        "Connecting": [5, 7]
-    },
-    {
-        "ID": 7,
-        "Type": 0,
-        "Activated": true,
-        "Connecting": []
-    },
+    }
 ]
 ```
