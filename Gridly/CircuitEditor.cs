@@ -106,8 +106,8 @@ namespace Gridly
                     part = new Neuron();
                 else
                     part = new Circuit();
-
-                part.Position = new Vector2(800, 500);
+                var pos = p["Position"];
+                part.Position = new Vector2((float)pos["x"], (float)pos["y"]);
                 refIDs[i] = (uint)p["ID"];
                 newIDs[i] = part.ID;
                 parts.Add(part);
@@ -116,6 +116,8 @@ namespace Gridly
             for (i = 0; i < parts.Count; i++)
             {
                 parts[i].Deserialize((JObject)arr[i], refIDs, newIDs, parts.ToArray());
+                if (parts[i] is Circuit c)
+                    childEditors.Add(c.Editor);
             }
         }
 

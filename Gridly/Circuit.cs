@@ -100,8 +100,8 @@ namespace Gridly
             foreach (var c in conns)
             {
                 uint id = newIDs[Array.IndexOf(orgIDs, c)];
-                connecting.Add(parts.First(p => p.ID == id));
-                couldDisconnected.Add(false);
+                var part = parts.First(p => p.ID == id);
+                ConnectTo(part);
             }
             Editor.Deserialize(obj);
             Initialized = true;
@@ -113,6 +113,7 @@ namespace Gridly
             {
                 { "ID", ID },
                 { "Type", 1 },
+                { "Position", new JObject { { "x", Position.X }, { "y", Position.Y } } },
                 { "Connecting", JArray.FromObject(connecting.Select(c => c.ID)) },
                 { "Inputs", JArray.FromObject(Editor.GetInputIDs()) },
                 { "Outputs", JArray.FromObject(Editor.GetOutputIDs()) },

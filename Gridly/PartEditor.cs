@@ -17,7 +17,7 @@ namespace Gridly
         protected List<Part> parts;
         private TileMap tilemap;
         EditorState state;
-        List<PartEditor> childEditors;
+        protected List<PartEditor> childEditors;
         PartEditor aboveEditor;
         PartEditor parentEditor;
 
