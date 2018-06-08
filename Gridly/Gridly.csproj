@@ -47,6 +47,7 @@
     <Compile Include="DefaultPartEditor.cs" />
     <Compile Include="Circuit.cs" />
     <Compile Include="CircuitEditor.cs" />
+    <Compile Include="EditableCircuit.cs" />
     <Compile Include="Geometry.cs" />
     <Compile Include="IConnectable.cs" />
     <Compile Include="Inputs.cs" />

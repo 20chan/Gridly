@@ -163,7 +163,7 @@ namespace Gridly
 
         public void SpawnCircuit(Vector2 pos)
         {
-            var c = new Circuit(pos);
+            var c = new EditableCircuit(pos);
             parts.Add(c);
             childEditors.Add(c.Editor);
         }
@@ -176,7 +176,7 @@ namespace Gridly
                 neu.Disconnect(n);
             }
             parts.Remove(n);
-            if (n is Circuit c)
+            if (n is EditableCircuit c)
                 childEditors.Remove(c.Editor);
         }
 
@@ -190,7 +190,7 @@ namespace Gridly
         {
             if (IsPartOnPos(pos, out var n))
             {
-                if (n is Circuit c)
+                if (n is EditableCircuit c)
                 {
                     editingCircuit = c;
                     state = EditorState.OTHER_EDITOR_ABOVE;
@@ -304,7 +304,7 @@ namespace Gridly
                 using (var sr = new StreamReader("circuit.json"))
                 using (var jr = new JsonTextReader(sr))
                 {
-                    var c = new Circuit(JObject.Load(jr));
+                    var c = new EditableCircuit(JObject.Load(jr));
                     c.Position = MousePos;
                     parts.Add(c);
                     childEditors.Add(c.Editor);

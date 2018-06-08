@@ -8,23 +8,16 @@ using System;
 
 namespace Gridly
 {
-    public class Circuit : Part
+    public abstract class Circuit : Part
     {
-        private List<IConnectable> connectedInputs;
-        private List<IConnectable> connectedOutputs;
-        public CircuitEditor Editor { get; private set; }
+        protected List<IConnectable> connectedInputs;
+        protected List<IConnectable> connectedOutputs;
 
         public Circuit(Vector2 pos) : base(pos)
         {
             connectedInputs = new List<IConnectable>();
             connectedOutputs = new List<IConnectable>();
-            Editor = new CircuitEditor(this);
             BackColor = Color.Purple;
-        }
-
-        public Circuit(JObject obj) : this(Vector2.Zero)
-        {
-            Editor.Deserialize(obj);
         }
 
         public Circuit() : this(Vector2.Zero)
@@ -50,12 +43,6 @@ namespace Gridly
             connectedInputs.Remove(from);
         }
 
-        public override void Activate(IConnectable from)
-        {
-            var idx = connectedInputs.IndexOf(from);
-            Editor.ActivateInput(idx);
-        }
-
         /// <summary>
         /// NOT USED
         /// </summary>
@@ -65,17 +52,7 @@ namespace Gridly
         {
             throw new System.NotImplementedException();
         }
-
-        public override void UpdateState()
-        {
-            // Editor.TickSynapse();
-        }
-
-        public override void UpdateSynapse()
-        {
-
-        }
-
+        
         public void ActivateOutput(int idx)
         {
             if (idx < connectedOutputs.Count)
@@ -92,33 +69,6 @@ namespace Gridly
                     ? Color.Red
                     : n is Circuit ? Color.Orange : Color.LightBlue, 0.5f);
             }
-        }
-
-        public override void Deserialize(JObject obj, uint[] orgIDs, uint[] newIDs, Part[] parts)
-        {
-            var conns = obj["Connecting"].ToObject<uint[]>();
-            foreach (var c in conns)
-            {
-                uint id = newIDs[Array.IndexOf(orgIDs, c)];
-                var part = parts.First(p => p.ID == id);
-                ConnectTo(part);
-            }
-            Editor.Deserialize(obj);
-            Initialized = true;
-        }
-
-        public override JObject Serialize()
-        {
-            return new JObject
-            {
-                { "ID", ID },
-                { "Type", 1 },
-                { "Position", new JObject { { "x", Position.X }, { "y", Position.Y } } },
-                { "Connecting", JArray.FromObject(connecting.Select(c => c.ID)) },
-                { "Inputs", JArray.FromObject(Editor.GetInputIDs()) },
-                { "Outputs", JArray.FromObject(Editor.GetOutputIDs()) },
-                { "Parts", Editor.SerializeParts()},
-            };
         }
     }
 }

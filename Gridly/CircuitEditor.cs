@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using static Gridly.Inputs;
 
 namespace Gridly
@@ -105,7 +102,7 @@ namespace Gridly
                 if ((int)p["Type"] == 0)
                     part = new Neuron();
                 else
-                    part = new Circuit();
+                    part = new EditableCircuit();
                 var pos = p["Position"];
                 part.Position = new Vector2((float)pos["x"], (float)pos["y"]);
                 refIDs[i] = (uint)p["ID"];
@@ -116,7 +113,7 @@ namespace Gridly
             for (i = 0; i < parts.Count; i++)
             {
                 parts[i].Deserialize((JObject)arr[i], refIDs, newIDs, parts.ToArray());
-                if (parts[i] is Circuit c)
+                if (parts[i] is EditableCircuit c)
                     childEditors.Add(c.Editor);
             }
         }
