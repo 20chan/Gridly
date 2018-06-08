@@ -14,9 +14,9 @@ namespace Gridly
             Editor = new CircuitEditor(this);
         }
 
-        public EditableCircuit() : base()
+        public EditableCircuit() : this(Vector2.Zero)
         {
-
+            Initialized = false;
         }
 
         public EditableCircuit(JObject obj) : this(Vector2.Zero)

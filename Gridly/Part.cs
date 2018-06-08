@@ -47,7 +47,7 @@ namespace Gridly
             }
         }
 
-        public void Disconnect(IConnectable n)
+        public virtual void Disconnect(IConnectable n)
         {
             if (connecting.Contains(n))
             {

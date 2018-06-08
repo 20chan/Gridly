@@ -20,11 +20,6 @@ namespace Gridly
             BackColor = Color.Purple;
         }
 
-        public Circuit() : this(Vector2.Zero)
-        {
-            Initialized = false;
-        }
-
         public override void ConnectTo(IConnectable n)
         {
             base.ConnectTo(n);
@@ -32,12 +27,19 @@ namespace Gridly
             connectedOutputs.Add(n);
         }
 
-        public void ConnectFrom(IConnectable from)
+        public override void Disconnect(IConnectable n)
+        {
+            base.Disconnect(n);
+
+            connectedOutputs.Remove(n);
+        }
+
+        public virtual void ConnectFrom(IConnectable from)
         {
             connectedInputs.Add(from);
         }
 
-        public void DisconnectFrom(IConnectable from)
+        public virtual void DisconnectFrom(IConnectable from)
         {
             // if (connectedInputs.Contains(from))
             connectedInputs.Remove(from);
