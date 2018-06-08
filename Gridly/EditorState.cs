@@ -1,6 +1,4 @@
-﻿using static Gridly.EditorState;
-
-namespace Gridly
+﻿namespace Gridly
 {
     internal enum EditorState
     {

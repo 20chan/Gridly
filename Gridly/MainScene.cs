@@ -13,13 +13,11 @@ namespace Gridly
         SpriteBatch spriteBatch;
         Random random;
 
-        EditorState state;
         bool isUIHandledInput;
         Matrix scale;
         PartEditor baseEditor;
-        
         GUIManager guiManager;
-
+        
         public MainScene()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -34,7 +32,6 @@ namespace Gridly
             graphics.PreferredBackBufferHeight = 1080;
             graphics.ApplyChanges();
 
-            state = EditorState.IDEAL;
             random = new Random();
             guiManager = new GUIManager();
             scale = Matrix.CreateScale(2);

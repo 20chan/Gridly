@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -57,6 +58,16 @@ namespace Gridly
                         n.Number = outputNeurons.Count;
                         outputNeurons.Add(n);
                     }
+        }
+
+        public override void Deserialize(Stream stream)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void Serialize(Stream stream)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

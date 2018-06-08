@@ -56,7 +56,7 @@
     <Compile Include="UIHelper.cs" />
     <Compile Include="Collidable.cs" />
     <Compile Include="MainScene.cs" />
-    <Compile Include="MainState.cs" />
+    <Compile Include="EditorState.cs" />
     <Compile Include="TileMap.cs" />
     <Compile Include="Neuron.cs" />
     <Compile Include="Program.cs" />

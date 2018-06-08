@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.IO;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -35,6 +35,11 @@ namespace Gridly
             parts = new List<Part>();
             tilemap = new TileMap(parts, 16, 10);
             state = EditorState.IDEAL;
+        }
+
+        public PartEditor(Stream stream) : this()
+        {
+            Deserialize(stream);
         }
 
         public void Update()
@@ -296,5 +301,8 @@ namespace Gridly
             part = null;
             return false;
         }
+
+        public abstract void Serialize(Stream stream);
+        public abstract void Deserialize(Stream stream);
     }
 }
