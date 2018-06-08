@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 using static Gridly.Inputs;
 
@@ -60,14 +63,26 @@ namespace Gridly
                     }
         }
 
-        public override void Deserialize(Stream stream)
+        internal IEnumerable<uint> GetInputIDs()
+            => inputNeurons.Select(n => n.ID);
+
+        internal IEnumerable<uint> GetOutputIDs()
+            => outputNeurons.Select(n => n.ID);
+
+        internal IEnumerable<uint> GetPartsIDs()
+            => parts.Select(n => n.ID);
+
+        public override void Deserialize(JObject arr)
         {
-            throw new System.NotImplementedException();
+
         }
 
-        public override void Serialize(Stream stream)
+        public override JObject Serialize()
+            => self.Serialize();
+
+        public JArray SerializeParts()
         {
-            throw new System.NotImplementedException();
+            return JArray.FromObject(parts.Select(p => p.Serialize()));
         }
     }
 }

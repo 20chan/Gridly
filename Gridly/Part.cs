@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json.Linq;
 
 namespace Gridly
 {
@@ -69,11 +70,24 @@ namespace Gridly
                 couldDisconnected[i] = Geometry.IsTwoSegmentsInstersect(Position, connecting[i].Position, p1, p2);
         }
 
+        public static Part FromJson(JObject obj)
+        {
+            Part result = null;
+            if (obj["Type"].ToObject<int>() == 0)
+                result = new Neuron(Vector2.Zero);
+            else
+                result = new Circuit(Vector2.Zero);
+            result.Deserialize(obj);
+            return result;
+        }
+
         public abstract void Log(StringBuilder sb);
         public abstract void Activate(IConnectable from);
         public abstract void ActivateImmediate();
         public abstract void UpdateSynapse();
         public abstract void UpdateState();
+        public abstract JObject Serialize();
+        public abstract void Deserialize(JObject obj);
         public virtual void DrawSynapse(SpriteBatch sb) { }
         public virtual void DrawUpperSynapse(SpriteBatch sb)
         {

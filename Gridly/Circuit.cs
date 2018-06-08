@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json.Linq;
 
 namespace Gridly
 {
@@ -79,6 +81,24 @@ namespace Gridly
                     ? Color.Red
                     : n is Circuit ? Color.Orange : Color.LightBlue, 0.5f);
             }
+        }
+
+        public override void Deserialize(JObject obj)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override JObject Serialize()
+        {
+            return new JObject
+            {
+                { "ID", ID },
+                { "Type", 1 },
+                { "Connecting", JArray.FromObject(connecting.Select(c => c.ID)) },
+                { "Parts", Editor.SerializeParts()},
+                { "Inputs", JArray.FromObject(Editor.GetInputIDs()) },
+                { "Outputs", JArray.FromObject(Editor.GetOutputIDs()) },
+            };
         }
     }
 }

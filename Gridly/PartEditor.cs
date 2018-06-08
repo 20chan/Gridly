@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Newtonsoft.Json.Linq;
 
 using static Gridly.Inputs;
 
@@ -11,7 +12,7 @@ namespace Gridly
     public abstract class PartEditor
     {
         public bool Enabled { get; set; }
-        private List<Part> parts;
+        protected List<Part> parts;
         private TileMap tilemap;
         EditorState state;
         List<PartEditor> childEditors;
@@ -35,11 +36,6 @@ namespace Gridly
             parts = new List<Part>();
             tilemap = new TileMap(parts, 16, 10);
             state = EditorState.IDEAL;
-        }
-
-        public PartEditor(Stream stream) : this()
-        {
-            Deserialize(stream);
         }
 
         public void Update()
@@ -302,7 +298,7 @@ namespace Gridly
             return false;
         }
 
-        public abstract void Serialize(Stream stream);
-        public abstract void Deserialize(Stream stream);
+        public abstract JObject Serialize();
+        public abstract void Deserialize(JObject arr);
     }
 }

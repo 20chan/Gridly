@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json.Linq;
 
 namespace Gridly
 {
@@ -88,6 +89,23 @@ namespace Gridly
         public override void ActivateImmediate()
         {
             Activated = true;
+        }
+
+        public override void Deserialize(JObject obj)
+        {
+            Activated = obj["Activated"].ToObject<bool>();
+            
+        }
+
+        public override JObject Serialize()
+        {
+            return new JObject
+            {
+                { "ID", ID },
+                { "Type", 0 },
+                { "Activated", Activated },
+                { "Connecting", JArray.FromObject(connecting.Select(c => c.ID)) }
+            };
         }
     }
 }
