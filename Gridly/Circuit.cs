@@ -22,6 +22,11 @@ namespace Gridly
             BackColor = Color.Purple;
         }
 
+        public Circuit(JObject obj) : this(Vector2.Zero)
+        {
+            Editor.Deserialize(obj);
+        }
+
         public Circuit() : this(Vector2.Zero)
         {
             Initialized = false;
@@ -89,13 +94,14 @@ namespace Gridly
             }
         }
 
-        public override void Deserialize(JObject obj, int[] orgIDs, Part[] parts)
+        public override void Deserialize(JObject obj, uint[] orgIDs, uint[] newIDs, Part[] parts)
         {
-            var conns = obj["Connecting"].ToObject<int[]>();
+            var conns = obj["Connecting"].ToObject<uint[]>();
             foreach (var c in conns)
             {
-                var idx = Array.IndexOf(orgIDs, c);
-                connecting.Add(parts[idx]);
+                uint id = newIDs[Array.IndexOf(orgIDs, c)];
+                connecting.Add(parts.First(p => p.ID == id));
+                couldDisconnected.Add(false);
             }
             Editor.Deserialize(obj);
             Initialized = true;

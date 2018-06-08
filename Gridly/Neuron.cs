@@ -97,14 +97,15 @@ namespace Gridly
             Activated = true;
         }
 
-        public override void Deserialize(JObject obj, int[] orgIDs, Part[] parts)
+        public override void Deserialize(JObject obj, uint[] orgIDs, uint[] newIDs, Part[] parts)
         {
             Activated = (bool)obj["Activated"];
-            var conns = obj["Connecting"].ToObject<int[]>();
+            var conns = obj["Connecting"].ToObject<uint[]>();
             foreach (var c in conns)
             {
-                var idx = Array.IndexOf(orgIDs, c);
-                connecting.Add(parts[idx]);
+                uint id = newIDs[Array.IndexOf(orgIDs, c)];
+                connecting.Add(parts.First(p => p.ID == id));
+                couldDisconnected.Add(false);
             }
 
             Initialized = true;

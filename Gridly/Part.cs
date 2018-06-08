@@ -79,7 +79,7 @@ namespace Gridly
         public abstract void UpdateSynapse();
         public abstract void UpdateState();
         public abstract JObject Serialize();
-        public abstract void Deserialize(JObject obj, int[] orgIDs, Part[] parts);
+        public abstract void Deserialize(JObject obj, uint[] orgIDs, uint[] newIDs, Part[] parts);
         public virtual void DrawSynapse(SpriteBatch sb) { }
         public virtual void DrawUpperSynapse(SpriteBatch sb)
         {

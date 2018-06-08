@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using static Gridly.Inputs;
+using System;
 
 namespace Gridly
 {
@@ -88,6 +90,8 @@ namespace Gridly
 
             if (IsKeyDown(Keys.Escape))
                 CloseEditor();
+
+            SaveLoadCircuit();
         }
 
         protected void UpdateByStates()
@@ -282,6 +286,30 @@ namespace Gridly
             editingCircuit = null;
             aboveEditor = null;
             state = EditorState.IDEAL;
+        }
+
+        private void SaveLoadCircuit()
+        {
+            if (IsKeyDown(Keys.S))
+                if (IsPartOnPos(MousePos, out var p))
+                    if (p is Circuit c)
+                    {
+                        using (var sw = new StreamWriter("circuit.json"))
+                        using (var jw = new JsonTextWriter(sw))
+                            c.Serialize().WriteTo(jw);
+                    }
+
+            if (IsKeyDown(Keys.L))
+            {
+                using (var sr = new StreamReader("circuit.json"))
+                using (var jr = new JsonTextReader(sr))
+                {
+                    var c = new Circuit(JObject.Load(jr));
+                    c.Position = MousePos;
+                    parts.Add(c);
+                    childEditors.Add(c.Editor);
+                }
+            }
         }
 
         protected bool IsPartOnPos(Vector2 pos, out Part part)

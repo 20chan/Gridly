@@ -40,6 +40,22 @@ namespace Gridly
             }
         }
 
+        protected void SetInput(Neuron n)
+        {
+            n.DefaultColor = Color.Orange;
+            n.DisplayNumber = true;
+            n.Number = inputNeurons.Count;
+            inputNeurons.Add(n);
+        }
+
+        protected void SetOutput(Neuron n)
+        {
+            n.DefaultColor = Color.LightBlue;
+            n.DisplayNumber = true;
+            n.Number = outputNeurons.Count;
+            outputNeurons.Add(n);
+        }
+
         protected override void UpdatePartInput()
         {
             base.UpdatePartInput();
@@ -47,21 +63,11 @@ namespace Gridly
             if (IsKeyDown(Keys.I))
                 if (IsPartOnPos(MousePos, out var p))
                     if (p is Neuron n)
-                    {
-                        n.DefaultColor = Color.Orange;
-                        n.DisplayNumber = true;
-                        n.Number = inputNeurons.Count;
-                        inputNeurons.Add(n);
-                    }
+                        SetInput(n);
             if (IsKeyDown(Keys.O))
                 if (IsPartOnPos(MousePos, out var p))
                     if (p is Neuron n)
-                    {
-                        n.DefaultColor = Color.LightBlue;
-                        n.DisplayNumber = true;
-                        n.Number = outputNeurons.Count;
-                        outputNeurons.Add(n);
-                    }
+                        SetOutput(n);
         }
 
         internal IEnumerable<uint> GetInputIDs()
@@ -75,17 +81,21 @@ namespace Gridly
 
         public override void Deserialize(JObject obj)
         {
-            DeserializeParts((JArray)obj["Parts"], out var refIds);
+            DeserializeParts((JArray)obj["Parts"], out var refIds, out var newIds);
 
-            foreach (int n in obj["Inputs"])
-                inputNeurons.Add((Neuron)parts[Array.IndexOf(refIds, n)]);
-            foreach (int n in obj["Outputs"])
-                outputNeurons.Add((Neuron)parts[Array.IndexOf(refIds, n)]);
+            foreach (uint n in obj["Inputs"])
+                SetInput(Match(newIds[Array.IndexOf(refIds, n)]));
+            foreach (uint n in obj["Outputs"])
+                SetOutput(Match(newIds[Array.IndexOf(refIds, n)]));
+
+            Neuron Match(uint id)
+                => (Neuron)parts.First(p => p.ID == id);
         }
 
-        public void DeserializeParts(JArray arr, out int[] refIDs)
+        public void DeserializeParts(JArray arr, out uint[] refIDs, out uint[] newIDs)
         {
-            refIDs = new int[arr.Count];
+            refIDs = new uint[arr.Count];
+            newIDs = new uint[arr.Count];
 
             parts.Clear();
             int i = 0;
@@ -93,17 +103,19 @@ namespace Gridly
             {
                 Part part;
                 if ((int)p["Type"] == 0)
-                    part = new Circuit();
-                else
                     part = new Neuron();
+                else
+                    part = new Circuit();
 
-                refIDs[i] = (int)p["ID"];
+                part.Position = new Vector2(800, 500);
+                refIDs[i] = (uint)p["ID"];
+                newIDs[i] = part.ID;
                 parts.Add(part);
                 i++;
             }
             for (i = 0; i < parts.Count; i++)
             {
-                parts[i].Deserialize((JObject)arr[i], refIDs, parts.ToArray());
+                parts[i].Deserialize((JObject)arr[i], refIDs, newIDs, parts.ToArray());
             }
         }
 
