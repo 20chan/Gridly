@@ -54,9 +54,14 @@ namespace Gridly
 
             if (remainingDelay <= 0)
             {
-                Tick();
-                remainingDelay = synapseInterval;
+                SkipTick();
             }
+        }
+
+        public void SkipTick()
+        {
+            Tick();
+            remainingDelay = synapseInterval;
         }
 
         private void Tick()

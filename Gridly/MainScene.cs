@@ -68,6 +68,8 @@ namespace Gridly
                 baseEditor.UpdateTick();
                 baseEditor.Update();
             }
+            if (Inputs.IsKeyDown(Keys.S))
+                baseEditor.SkipTick();
             if (Inputs.IsKeyDown(Keys.Tab))
                 paused = !paused;
 
