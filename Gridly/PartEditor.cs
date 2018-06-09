@@ -29,6 +29,7 @@ namespace Gridly
         Part dragging;
         Vector2 disconnectFrom;
         Circuit editingCircuit;
+        List<IConnectable> selectedParts;
 
         public PartEditor()
         {
@@ -38,6 +39,7 @@ namespace Gridly
             parts = new List<Part>();
             tilemap = new TileMap(parts, 16, 10);
             state = EditorState.IDEAL;
+            selectedParts = new List<IConnectable>();
         }
 
         public void Update()
@@ -85,7 +87,7 @@ namespace Gridly
                     SpawnAt(MousePos, IsKeyPressing(Keys.LeftShift));
 
             if (IsLeftMouseDown())
-                HandleDragConnect();
+                HandleDragSelectConnect();
 
             if (IsLeftMouseUp())
                 EndDragConnect();
@@ -225,7 +227,7 @@ namespace Gridly
                     DeletePart(n);
         }
 
-        protected void HandleDragConnect()
+        protected void HandleDragSelectConnect()
         {
             if (IsPartOnPos(MousePos, out var n))
             {
@@ -253,6 +255,14 @@ namespace Gridly
             {
                 disconnectFrom = MousePos;
                 state = EditorState.NEURON_DISCONNECTING;
+            }
+            else
+            {
+                if (state == EditorState.NEURON_CONNECTING)
+                {
+                    connectFrom = null;
+                    state = EditorState.IDEAL;
+                }
             }
         }
 
