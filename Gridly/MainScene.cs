@@ -13,6 +13,7 @@ namespace Gridly
         SpriteBatch spriteBatch;
         Random random;
 
+        bool paused;
         bool isUIHandledInput;
         Matrix scale;
         PartEditor baseEditor;
@@ -62,11 +63,15 @@ namespace Gridly
 
             isUIHandledInput = guiManager.HandleInput();
             UpdateUIEvent();
-            baseEditor.UpdateTick();
-            baseEditor.Update();
+            if (!paused)
+            {
+                baseEditor.UpdateTick();
+                baseEditor.Update();
+            }
+            if (Inputs.IsKeyDown(Keys.Tab))
+                paused = !paused;
 
             Inputs.LateUpdate();
-
             base.Update(gameTime);
         }
 
