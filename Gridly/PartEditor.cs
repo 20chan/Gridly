@@ -270,6 +270,8 @@ namespace Gridly
                     else
                     {
                         dragging = n;
+                        UnselectAll();
+                        Select(n);
                         state = EditorState.NEURON_DRAGGING;
                     }
                 }
@@ -294,6 +296,7 @@ namespace Gridly
                 }
                 else if (state == EditorState.IDEAL)
                 {
+                    UnselectAll();
                     selectionFrom = MousePos;
                     state = EditorState.NEURON_SELECT_DRAGGING;
                 }
