@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace Gridly
 {
@@ -11,10 +12,12 @@ namespace Gridly
         private static uint idCount = 0;
         public uint ID { get; }
         protected static Vector2 Origin = Resources.PartTexture.Bounds.Size.ToVector2() / 2;
-
-        protected Color BackColor;
+        private static float edgeScale = 0.2f;
+        private static Vector2 edgeOrigin = Resources.EdgeTexture.Bounds.Size.ToVector2() / 2;
+        protected Color BackColor;  
         protected List<IConnectable> connecting;
         protected List<bool> couldDisconnected;
+        protected bool selected;
 
         public bool Initialized { get; protected set; }
 
@@ -72,6 +75,16 @@ namespace Gridly
             for (int i = 0; i < connecting.Count; i++)
                 couldDisconnected[i] = Geometry.IsTwoSegmentsInstersect(Position, connecting[i].Position, p1, p2);
         }
+
+        public void Select()
+        {
+            selected = true;
+        }
+
+        public void Unselect()
+        {
+            selected = false;
+        }
         
         public abstract void Log(StringBuilder sb);
         public abstract void Activate(IConnectable from);
@@ -80,6 +93,18 @@ namespace Gridly
         public abstract void UpdateState();
         public abstract JObject Serialize();
         public abstract void Deserialize(JObject obj, uint[] orgIDs, uint[] newIDs, Part[] parts);
+        public virtual void DrawBack(SpriteBatch sb)
+        {
+            if (selected)
+            {
+                sb.Draw(
+                    Resources.EdgeTexture,
+                    position: Position,
+                    origin: edgeOrigin,
+                    //scale: new Vector2(edgeScale),
+                    color: Color.Green);
+            }
+        }
         public virtual void DrawSynapse(SpriteBatch sb) { }
         public virtual void DrawUpperSynapse(SpriteBatch sb)
         {

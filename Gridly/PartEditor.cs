@@ -29,7 +29,8 @@ namespace Gridly
         Part dragging;
         Vector2 disconnectFrom;
         Circuit editingCircuit;
-        List<IConnectable> selectedParts;
+        Vector2 selectionFrom;
+        List<Part> selectedParts;
 
         public PartEditor()
         {
@@ -39,7 +40,7 @@ namespace Gridly
             parts = new List<Part>();
             tilemap = new TileMap(parts, 16, 10);
             state = EditorState.IDEAL;
-            selectedParts = new List<IConnectable>();
+            selectedParts = new List<Part>();
         }
 
         public void Update()
@@ -108,6 +109,9 @@ namespace Gridly
 
             if (state == EditorState.NEURON_DRAGGING)
                 dragging.AddForceTo(MousePos, 0.01f);
+
+            if (state == EditorState.NEURON_SELECT_DRAGGING)
+                SelectSelection();
         }
 
         public void UpdateTiles()
@@ -132,6 +136,8 @@ namespace Gridly
         public void Draw(SpriteBatch sb)
         {
             foreach (var n in parts)
+                n.DrawBack(sb);
+            foreach (var n in parts)
                 n.DrawSynapse(sb);
             foreach (var n in parts)
                 n.DrawUpperSynapse(sb);
@@ -150,6 +156,10 @@ namespace Gridly
             else if (state == EditorState.NEURON_DISCONNECTING)
             {
                 sb.DrawLine(disconnectFrom, MousePos, 1f, Color.Red);
+            }
+            else if (state == EditorState.NEURON_SELECT_DRAGGING)
+            {
+                sb.DrawRectangle(UIHelper.RectFromTwo(selectionFrom, MousePos), 2, Color.Green);
             }
         }
 
@@ -227,6 +237,25 @@ namespace Gridly
                     DeletePart(n);
         }
 
+        protected void Select(Part p)
+        {
+            selectedParts.Add(p);
+            p.Select();
+        }
+
+        protected void Unselect(Part p)
+        {
+            selectedParts.Remove(p);
+            p.Unselect();
+        }
+
+        protected void UnselectAll()
+        {
+            foreach (var p in parts)
+                p.Unselect();
+            selectedParts.Clear();
+        }
+
         protected void HandleDragSelectConnect()
         {
             if (IsPartOnPos(MousePos, out var n))
@@ -263,6 +292,11 @@ namespace Gridly
                     connectFrom = null;
                     state = EditorState.IDEAL;
                 }
+                else if (state == EditorState.IDEAL)
+                {
+                    selectionFrom = MousePos;
+                    state = EditorState.NEURON_SELECT_DRAGGING;
+                }
             }
         }
 
@@ -278,6 +312,21 @@ namespace Gridly
                 DisconnectIntersection(disconnectFrom, MousePos);
                 state = EditorState.IDEAL;
             }
+            else if (state == EditorState.NEURON_SELECT_DRAGGING)
+            {
+                SelectSelection();
+                state = EditorState.IDEAL;
+            }
+        }
+
+        private void SelectSelection()
+        {
+            UnselectAll();
+            var bound = UIHelper.RectFromTwo(selectionFrom, MousePos);
+
+            foreach (var p in parts)
+                if (bound.Contains(p.Position))
+                    Select(p);
         }
 
         protected void PreviewDisconnects()

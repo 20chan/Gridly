@@ -7,6 +7,15 @@ namespace Gridly
 {
     public static class UIHelper
     {
+        public static Rectangle RectFromTwo(Vector2 p1, Vector2 p2)
+        {
+            int x1 = (int)Math.Min(p1.X, p2.X);
+            int x2 = (int)Math.Max(p1.X, p2.X);
+            int y1 = (int)Math.Min(p1.Y, p2.Y);
+            int y2 = (int)Math.Max(p1.Y, p2.Y);
+            return new Rectangle(x1, y1, x2 - x1, y2 - y1);
+        }
+
         public static void DrawLine(this SpriteBatch sb, Vector2 p1, Vector2 p2, float border, Color color, float layerDepth = 0)
         {
             float angle = (float)Math.Atan2(p2.Y - p1.Y, p2.X - p1.X);
@@ -21,6 +30,14 @@ namespace Gridly
 
         public static void FillRectangle(this SpriteBatch sb, Rectangle rect, Color color)
             => sb.Draw(Resources.DummyTexture, rect, color);
+
+        public static void DrawRectangle(this SpriteBatch sb, Rectangle rect, int border, Color color)
+        {
+            sb.Draw(Resources.DummyTexture, new Rectangle(rect.X, rect.Y, border, rect.Height + border), color);
+            sb.Draw(Resources.DummyTexture, new Rectangle(rect.X, rect.Y, rect.Width + border, border), color);
+            sb.Draw(Resources.DummyTexture, new Rectangle(rect.X + rect.Width, rect.Y, border, rect.Height + border), color);
+            sb.Draw(Resources.DummyTexture, new Rectangle(rect.X, rect.Y + rect.Height, rect.Width + border, border), color);
+        }
 
         public static void DrawString(this SpriteBatch sb, SpriteFont font, string text, Alignment align, Rectangle bound, Color color, float rotation)
         {
