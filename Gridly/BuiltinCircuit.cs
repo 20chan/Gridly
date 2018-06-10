@@ -60,5 +60,8 @@ namespace Gridly
 
         public static BuiltinCircuit AndCircuit(Vector2 pos)
             => new BuiltinCircuit(pos, inputs => inputs.All(i => i));
+
+        public static BuiltinCircuit NotCircuit(Vector2 pos)
+            => new BuiltinCircuit(pos, inputs => inputs.Count() > 0 ? !inputs.First() : true);
     }
 }

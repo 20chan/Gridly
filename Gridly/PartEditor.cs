@@ -379,6 +379,8 @@ namespace Gridly
             }
             if (IsKeyDown(Keys.A))
                 parts.Add(BuiltinCircuit.AndCircuit(MousePos));
+            if (IsKeyDown(Keys.N))
+                parts.Add(BuiltinCircuit.NotCircuit(MousePos));
         }
 
         protected bool IsPartOnPos(Vector2 pos, out Part part)
