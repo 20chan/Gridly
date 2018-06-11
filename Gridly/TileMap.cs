@@ -65,8 +65,8 @@ namespace Gridly
                 t.Clear();
             foreach (var n in parts)
             {
-                var x = (int)(n.Position.X / TileSize);
-                var y = (int)(n.Position.Y / TileSize);
+                var x = MathHelper.Clamp((int)(n.Position.X / TileSize), 0, WidthTileCount - 1);
+                var y = MathHelper.Clamp((int)(n.Position.Y / TileSize), 0, HeightTileCount - 1);
                 tiles[y, x].Add(n);
             }
         }
