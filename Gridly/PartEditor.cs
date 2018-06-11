@@ -222,7 +222,7 @@ namespace Gridly
                 }
                 else
                 {
-                    if (selectedParts.Count == 0)
+                    if (!selectedParts.Contains(n))
                         n.ActivateImmediate();
                     else
                         foreach (var s in selectedParts)
