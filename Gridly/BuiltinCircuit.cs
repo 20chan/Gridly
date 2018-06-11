@@ -55,16 +55,6 @@ namespace Gridly
                 inputStates[i] = false;
         }
 
-        public override void Deserialize(JObject obj, uint[] orgIDs, uint[] newIDs, Part[] parts)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override JObject Serialize()
-        {
-            throw new System.NotImplementedException();
-        }
-
         public override void Draw(SpriteBatch sb)
         {
             base.Draw(sb);
@@ -79,5 +69,48 @@ namespace Gridly
 
         public static BuiltinCircuit OrCircuit(Vector2 pos)
             => new BuiltinCircuit(pos, 'O', inputs => inputs.Any(i => i));
+
+        public override void Deserialize(JObject obj, uint[] orgIDs, uint[] newIDs, Part[] parts)
+        {
+            var conns = obj["Connecting"].ToObject<uint[]>();
+            foreach (var c in conns)
+            {
+                uint id = newIDs[Array.IndexOf(orgIDs, c)];
+                var part = Match(id);
+                ConnectTo(part);
+            }
+
+            Initialized = true;
+
+            Neuron Match(uint id)
+                => (Neuron)parts.First(p => p.ID == id);
+        }
+
+        public override JObject Serialize()
+        {
+            return new JObject
+            {
+                { "ID", ID },
+                { "Type", 2 },
+                { "Position", new JObject { { "x", Position.X }, { "y", Position.Y } } },
+                { "Connecting", JArray.FromObject(connecting.Select(c => c.ID)) },
+                { "Character", character },
+            };
+        }
+
+        public static BuiltinCircuit FromChar(Vector2 pos, char c)
+        {
+            switch (c)
+            {
+                case 'A':
+                    return AndCircuit(pos);
+                case 'N':
+                    return NotCircuit(pos);
+                case 'O':
+                    return OrCircuit(pos);
+                default:
+                    throw new Exception();
+            }
+        }
     }
 }

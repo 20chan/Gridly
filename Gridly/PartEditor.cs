@@ -399,10 +399,20 @@ namespace Gridly
                 using (var sr = new StreamReader("circuit.json"))
                 using (var jr = new JsonTextReader(sr))
                 {
-                    var c = new EditableCircuit(JObject.Load(jr));
-                    c.Position = MousePos;
+                    var loaded = JObject.Load(jr);
+                    Circuit c = null;
+                    if ((int)loaded["Type"] == 1)
+                    {
+                        c = new EditableCircuit(loaded);
+                        c.Position = MousePos;
+                        childEditors.Add((c as EditableCircuit).Editor);
+                    }
+                    else
+                    {
+                        var ch = loaded["Character"].ToObject<char>();
+                        c = BuiltinCircuit.FromChar(MousePos, ch);
+                    }
                     parts.Add(c);
-                    childEditors.Add(c.Editor);
                 }
             }
             if (IsKeyDown(Keys.A))

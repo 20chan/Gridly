@@ -98,11 +98,20 @@ namespace Gridly
             int i = 0;
             foreach (JObject p in arr)
             {
-                Part part;
-                if ((int)p["Type"] == 0)
+                Part part = null;
+                var type = (int)p["Type"];
+                if (type == 2)
+                {
+                    var ch = p["Character"].ToObject<char>();
+                    part = BuiltinCircuit.FromChar(Vector2.Zero, ch);
+                }
+                else if (type == 0)
                     part = new Neuron();
-                else
+                else if (type == 1)
                     part = new EditableCircuit();
+                else
+                    throw new Exception();
+
                 var pos = p["Position"];
                 part.Position = new Vector2((float)pos["x"], (float)pos["y"]);
                 refIDs[i] = (uint)p["ID"];
