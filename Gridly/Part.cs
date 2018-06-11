@@ -48,6 +48,10 @@ namespace Gridly
                 connecting.Add(n);
                 couldDisconnected.Add(false);
             }
+            else
+            {
+                Disconnect(n);
+            }
         }
 
         public virtual void Disconnect(IConnectable n)

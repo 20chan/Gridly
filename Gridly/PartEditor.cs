@@ -25,8 +25,9 @@ namespace Gridly
         static float remainingDelay = 0f;
         static int tickCount = 0;
 
+        bool connectFromSelects;
         Part connectFrom;
-        Part dragging;
+        Part dragFrom;
         Vector2 disconnectFrom;
         Circuit editingCircuit;
         Vector2 selectionFrom;
@@ -78,7 +79,7 @@ namespace Gridly
         protected virtual void UpdatePartInput()
         {
             if (IsKeyDown(Keys.Space))
-                ActivateAt(MousePos);
+                ActivateSelects(MousePos);
 
             if (state == EditorState.OTHER_EDITOR_ABOVE)
                 return;
@@ -94,7 +95,7 @@ namespace Gridly
                 EndDragConnect();
 
             if (IsKeyDown(Keys.Delete))
-                DeleteAt(MousePos);
+                DeleteSelects(MousePos);
 
             if (IsKeyDown(Keys.Escape))
                 CloseEditor();
@@ -108,7 +109,8 @@ namespace Gridly
                 PreviewDisconnects();
 
             if (state == EditorState.NEURON_DRAGGING)
-                dragging.AddForceTo(MousePos, 0.01f);
+                foreach (var p in selectedParts)
+                    p.AddForce(MousePos - dragFrom.Position, 0.01f);
 
             if (state == EditorState.NEURON_SELECT_DRAGGING)
                 SelectSelection();
@@ -151,7 +153,11 @@ namespace Gridly
         {
             if (state == EditorState.NEURON_CONNECTING)
             {
-                sb.DrawLine(connectFrom.Position, MousePos, 1f, Color.White);
+                if (connectFromSelects)
+                    foreach (var p in selectedParts)
+                        sb.DrawLine(p.Position, MousePos, 1f, Color.White);
+                else
+                    sb.DrawLine(connectFrom.Position, MousePos, 1f, Color.White);
             }
             else if (state == EditorState.NEURON_DISCONNECTING)
             {
@@ -203,7 +209,7 @@ namespace Gridly
                 n.DisconnectIntersection(from, to);
         }
 
-        protected void ActivateAt(Vector2 pos)
+        protected void ActivateSelects(Vector2 pos)
         {
             if (IsPartOnPos(pos, out var n))
             {
@@ -215,7 +221,13 @@ namespace Gridly
                     aboveEditor.parentEditor = this;
                 }
                 else
-                    n.ActivateImmediate();
+                {
+                    if (selectedParts.Count == 0)
+                        n.ActivateImmediate();
+                    else
+                        foreach (var s in selectedParts)
+                            s.ActivateImmediate();
+                }
             }
         }
 
@@ -230,11 +242,20 @@ namespace Gridly
             }
         }
 
-        protected void DeleteAt(Vector2 pos)
+        protected void DeleteSelects(Vector2 pos)
         {
             if (state == EditorState.IDEAL)
                 if (IsPartOnPos(MousePos, out var n))
-                    DeletePart(n);
+                {
+                    if (!selectedParts.Contains(n))
+                        DeletePart(n);
+                    else
+                    {
+                        foreach (var p in selectedParts)
+                            DeletePart(p);
+                        UnselectAll();
+                    }
+                }
         }
 
         protected void Select(Part p)
@@ -264,20 +285,28 @@ namespace Gridly
                 {
                     if (IsKeyPressing(Keys.LeftShift))
                     {
+                        connectFromSelects = selectedParts.Contains(n);
                         connectFrom = n;
                         state = EditorState.NEURON_CONNECTING;
                     }
                     else
                     {
-                        dragging = n;
-                        UnselectAll();
-                        Select(n);
+                        if (!selectedParts.Contains(n))
+                        {
+                            UnselectAll();
+                            Select(n);
+                        }
+                        dragFrom = n;
                         state = EditorState.NEURON_DRAGGING;
                     }
                 }
                 else if (state == EditorState.NEURON_CONNECTING)
                 {
-                    connectFrom.ConnectTo(n);
+                    if (connectFromSelects)
+                        foreach (var p in selectedParts)
+                            p.ConnectTo(n);
+                    else
+                        connectFrom.ConnectTo(n);
                     connectFrom = null;
                     state = EditorState.IDEAL;
                 }
@@ -307,7 +336,6 @@ namespace Gridly
         {
             if (state == EditorState.NEURON_DRAGGING)
             {
-                dragging = null;
                 state = EditorState.IDEAL;
             }
             else if (state == EditorState.NEURON_DISCONNECTING)
