@@ -13,6 +13,7 @@ namespace Gridly
         private Func<IEnumerable<bool>, bool> function;
         private List<bool> inputStates;
         private char character;
+        private bool activated = false;
 
         private BuiltinCircuit(Vector2 pos, char ch, Func<IEnumerable<bool>, bool> f) : base(pos)
         {
@@ -41,17 +42,17 @@ namespace Gridly
 
         public override void UpdateSynapse()
         {
-            Console.WriteLine($"BUILTIN {{{character}}}");
-            Console.WriteLine(string.Join(",", inputStates));
-            if (function(inputStates))
+            if (activated)
                 foreach (var n in connectedOutputs)
                     n.Activate(this);
-            for (int i = 0; i < inputStates.Count; i++)
-                inputStates[i] = false;
+            activated = false;
         }
 
         public override void UpdateState()
         {
+            activated = function(inputStates);
+            for (int i = 0; i < inputStates.Count; i++)
+                inputStates[i] = false;
         }
 
         public override void Deserialize(JObject obj, uint[] orgIDs, uint[] newIDs, Part[] parts)
