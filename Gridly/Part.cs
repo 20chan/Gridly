@@ -35,7 +35,7 @@ namespace Gridly
         {
             if (!connecting.Contains(n))
             {
-                if (n is Circuit c)
+                if (n is INeedInput c)
                     c.ConnectFrom(this);
                 connecting.Add(n);
                 couldDisconnected.Add(false);

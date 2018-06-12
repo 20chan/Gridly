@@ -43,7 +43,7 @@ namespace Gridly
         public override void UpdateSynapse()
         {
             if (activated)
-                foreach (var n in connectedOutputs)
+                foreach (var n in connecting)
                     n.Activate(this);
             activated = false;
         }

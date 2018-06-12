@@ -51,6 +51,7 @@
     <Compile Include="EditableCircuit.cs" />
     <Compile Include="Geometry.cs" />
     <Compile Include="IConnectable.cs" />
+    <Compile Include="INeedInput.cs" />
     <Compile Include="Inputs.cs" />
     <Compile Include="Neuron.cs" />
     <Compile Include="Part.cs" />
@@ -91,6 +92,9 @@
     <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="app.manifest" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Parts\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />

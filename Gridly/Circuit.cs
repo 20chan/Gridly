@@ -8,30 +8,14 @@ using System;
 
 namespace Gridly
 {
-    public abstract class Circuit : Neuron
+    public abstract class Circuit : Neuron, INeedInput
     {
         protected List<IConnectable> connectedInputs;
-        protected List<IConnectable> connectedOutputs;
 
         public Circuit(Vector2 pos) : base(pos)
         {
             connectedInputs = new List<IConnectable>();
-            connectedOutputs = new List<IConnectable>();
             BackColor = Color.Purple;
-        }
-
-        public override void ConnectTo(IConnectable n)
-        {
-            base.ConnectTo(n);
-
-            connectedOutputs.Add(n);
-        }
-
-        public override void Disconnect(IConnectable n)
-        {
-            base.Disconnect(n);
-
-            connectedOutputs.Remove(n);
         }
 
         public virtual void ConnectFrom(IConnectable from)
@@ -57,8 +41,8 @@ namespace Gridly
         
         public void ActivateOutput(int idx)
         {
-            if (idx < connectedOutputs.Count)
-                connectedOutputs[idx].Activate(this);
+            if (idx < connecting.Count)
+                connecting[idx].Activate(this);
         }
 
         public override void DrawSynapse(SpriteBatch sb)
@@ -72,5 +56,8 @@ namespace Gridly
                     : n is Circuit ? Color.Orange : Color.LightBlue, 0.5f);
             }
         }
+
+        List<IConnectable> INeedInput.ConnectedInputs
+            => connectedInputs;
     }
 }
