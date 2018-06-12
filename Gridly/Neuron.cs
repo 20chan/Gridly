@@ -1,126 +1,54 @@
-﻿using System;
-using System.Text;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json.Linq;
 
 namespace Gridly
 {
-    public class Neuron : Part
+    public abstract class Neuron : Part
     {
-        public bool Activated { get; private set; }
-        public Color DefaultColor { get; set; }
-        private bool shouldActivate = false;
-
-        public bool DisplayNumber { get; set; }
-        public int Number { get; set; }
+        protected static Vector2 Origin = Resources.PartTexture.Bounds.Size.ToVector2() / 2;
+        private static float edgeScale = 0.2f;
+        private static Vector2 edgeOrigin = Resources.EdgeTexture.Bounds.Size.ToVector2() / 2;
+        protected Color BackColor;
 
         public Neuron(Vector2 pos) : base(pos)
         {
-            Activated = false;
-            DefaultColor = Color.White;
-            DisplayNumber = false;
+            BackColor = Color.White;
         }
 
-        public Neuron() : this(Vector2.Zero)
-        {
-            Initialized = false;
-        }
-
-        public override void UpdateSynapse()
-        {
-            if (Activated)
-                foreach (var n in connecting)
-                    n.Activate(this);
-            Activated = false;
-        }
-
-        public override void UpdateState()
-        {
-            if (shouldActivate)
-            {
-                Activated = true;
-                shouldActivate = false;
-            }
-        }
-
-        public override void DrawSynapse(SpriteBatch sb)
-        {
-            for (int i = 0; i < connecting.Count; i++)
-            {
-                var n = connecting[i];
-                sb.DrawLine(Position, n.Position, 2f,
-                    couldDisconnected[i]
-                    ? Color.Red
-                    : n is Circuit ? Color.Orange : Color.White, 0.5f);
-            }
-        }
-
+        public override Rectangle GetBounds()
+            => new Rectangle((Position - Origin).ToPoint(), Resources.PartTexture.Bounds.Size);
+        
         public override void Draw(SpriteBatch sb)
         {
-            BackColor = Activated ? Color.Blue : DefaultColor;
-            base.Draw(sb);
-            DrawNumber(sb);
+            sb.Draw(
+                Resources.PartTexture,
+                position: Position,
+                origin: Origin,
+                color: BackColor,
+                layerDepth: .5f);
         }
-
-        public void DrawNumber(SpriteBatch sb)
+        public virtual void DrawBack(SpriteBatch sb)
         {
-            if (DisplayNumber)
+            if (selected)
             {
-                sb.DrawString(Resources.DefaultFont,
-                    Number.ToString(),
-                    new Vector2(Position.X + 10, Position.Y),
-                    Color.Black);
+                sb.Draw(
+                    Resources.EdgeTexture,
+                    position: Position,
+                    origin: edgeOrigin,
+                    //scale: new Vector2(edgeScale),
+                    color: Color.Green);
             }
         }
-
-        public override void Log(StringBuilder sb)
+        public virtual void DrawSynapse(SpriteBatch sb) { }
+        public virtual void DrawUpperSynapse(SpriteBatch sb)
         {
-            sb.AppendLine($"Neuron {ID}");
-            sb.AppendLine($"  Activated: {Activated}");
-            sb.AppendLine($"  ReadyActivate: {shouldActivate}");
-            var cs = connecting.Count == 0
-                ? "None" : string.Join(", ", connecting.Select(c => c.ID));
-            sb.AppendLine($"  Connected Neurons: {cs}");
-            sb.AppendLine();
-        }
-
-        public override void Activate(IConnectable from)
-        {
-            shouldActivate = true;
-        }
-
-        public override void ActivateImmediate()
-        {
-            Activated = true;
-        }
-
-        public override void Deserialize(JObject obj, uint[] orgIDs, uint[] newIDs, Part[] parts)
-        {
-            Activated = (bool)obj["Activated"];
-            var conns = obj["Connecting"].ToObject<uint[]>();
-            foreach (var c in conns)
+            foreach (var n in connecting)
             {
-                uint id = newIDs[Array.IndexOf(orgIDs, c)];
-                var part = parts.First(p => p.ID == id);
-                ConnectTo(part);
+                var ratio80 = new Vector2(
+                    .2f * Position.X + .8f * n.Position.X,
+                    .2f * Position.Y + .8f * n.Position.Y);
+                sb.DrawLine(ratio80, n.Position, 2f, Color.Gray, 0.3f);
             }
-
-            Initialized = true;
-        }
-
-        public override JObject Serialize()
-        {
-            return new JObject
-            {
-                { "ID", ID },
-                { "Type", 0 },
-                { "Activated", Activated },
-                { "Position", new JObject { { "x", Position.X }, { "y", Position.Y } } },
-                { "Connecting", JArray.FromObject(connecting.Select(c => c.ID)) }
-            };
         }
     }
 }

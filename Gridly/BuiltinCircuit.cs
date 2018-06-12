@@ -82,8 +82,8 @@ namespace Gridly
 
             Initialized = true;
 
-            Neuron Match(uint id)
-                => (Neuron)parts.First(p => p.ID == id);
+            BasicNeuron Match(uint id)
+                => (BasicNeuron)parts.First(p => p.ID == id);
         }
 
         public override JObject Serialize()

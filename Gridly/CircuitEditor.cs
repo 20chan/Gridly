@@ -11,13 +11,13 @@ namespace Gridly
     public class CircuitEditor : PartEditor
     {
         Circuit self;
-        List<Neuron> inputNeurons, outputNeurons;
+        List<BasicNeuron> inputNeurons, outputNeurons;
 
         public CircuitEditor(Circuit c) : base()
         {
             self = c;
-            inputNeurons = new List<Neuron>();
-            outputNeurons = new List<Neuron>();
+            inputNeurons = new List<BasicNeuron>();
+            outputNeurons = new List<BasicNeuron>();
         }
 
         public void ActivateInput(int idx)
@@ -37,7 +37,7 @@ namespace Gridly
             }
         }
 
-        protected void SetInput(Neuron n)
+        protected void SetInput(BasicNeuron n)
         {
             n.DefaultColor = Color.Orange;
             n.DisplayNumber = true;
@@ -45,7 +45,7 @@ namespace Gridly
             inputNeurons.Add(n);
         }
 
-        protected void SetOutput(Neuron n)
+        protected void SetOutput(BasicNeuron n)
         {
             n.DefaultColor = Color.LightBlue;
             n.DisplayNumber = true;
@@ -59,11 +59,11 @@ namespace Gridly
 
             if (IsKeyDown(Keys.I))
                 if (IsPartOnPos(MousePos, out var p))
-                    if (p is Neuron n)
+                    if (p is BasicNeuron n)
                         SetInput(n);
             if (IsKeyDown(Keys.O))
                 if (IsPartOnPos(MousePos, out var p))
-                    if (p is Neuron n)
+                    if (p is BasicNeuron n)
                         SetOutput(n);
         }
 
@@ -85,8 +85,8 @@ namespace Gridly
             foreach (uint n in obj["Outputs"])
                 SetOutput(Match(newIds[Array.IndexOf(refIds, n)]));
 
-            Neuron Match(uint id)
-                => (Neuron)parts.First(p => p.ID == id);
+            BasicNeuron Match(uint id)
+                => (BasicNeuron)parts.First(p => p.ID == id);
         }
 
         public void DeserializeParts(JArray arr, out uint[] refIDs, out uint[] newIDs)
@@ -106,7 +106,7 @@ namespace Gridly
                     part = BuiltinCircuit.FromChar(Vector2.Zero, ch);
                 }
                 else if (type == 0)
-                    part = new Neuron();
+                    part = new BasicNeuron();
                 else if (type == 1)
                     part = new EditableCircuit();
                 else

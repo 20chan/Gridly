@@ -8,7 +8,7 @@ using System;
 
 namespace Gridly
 {
-    public abstract class Circuit : Part
+    public abstract class Circuit : Neuron
     {
         protected List<IConnectable> connectedInputs;
         protected List<IConnectable> connectedOutputs;

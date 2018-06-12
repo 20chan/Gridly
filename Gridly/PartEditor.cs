@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -137,11 +138,15 @@ namespace Gridly
 
         public void Draw(SpriteBatch sb)
         {
-            foreach (var n in parts)
+            var neurons = parts
+                .Where(p => p is Neuron)
+                .Select(p => p as Neuron);
+
+            foreach (var n in neurons)
                 n.DrawBack(sb);
-            foreach (var n in parts)
+            foreach (var n in neurons)
                 n.DrawSynapse(sb);
-            foreach (var n in parts)
+            foreach (var n in neurons)
                 n.DrawUpperSynapse(sb);
             foreach (var n in parts)
                 n.Draw(sb);
@@ -181,7 +186,7 @@ namespace Gridly
 
         public void SpawnNeuron(Vector2 pos)
         {
-            parts.Add(new Neuron(pos));
+            parts.Add(new BasicNeuron(pos));
         }
 
         public void SpawnCircuit(Vector2 pos)
@@ -415,13 +420,16 @@ namespace Gridly
                     parts.Add(c);
                 }
             }
-            if (IsKeyDown(Keys.A))
-                parts.Add(BuiltinCircuit.AndCircuit(MousePos));
-            if (IsKeyDown(Keys.N))
-                parts.Add(BuiltinCircuit.NotCircuit(MousePos));
-            if (IsKeyDown(Keys.O))
-                if (!IsPartOnPos(MousePos, out var _))
+
+            if (!IsPartOnPos(MousePos, out var _))
+            {
+                if (IsKeyDown(Keys.A))
+                    parts.Add(BuiltinCircuit.AndCircuit(MousePos));
+                if (IsKeyDown(Keys.N))
+                    parts.Add(BuiltinCircuit.NotCircuit(MousePos));
+                if (IsKeyDown(Keys.O))
                     parts.Add(BuiltinCircuit.OrCircuit(MousePos));
+            }
         }
 
         protected bool IsPartOnPos(Vector2 pos, out Part part)

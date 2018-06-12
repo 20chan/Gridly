@@ -11,10 +11,6 @@ namespace Gridly
     {
         private static uint idCount = 0;
         public uint ID { get; }
-        protected static Vector2 Origin = Resources.PartTexture.Bounds.Size.ToVector2() / 2;
-        private static float edgeScale = 0.2f;
-        private static Vector2 edgeOrigin = Resources.EdgeTexture.Bounds.Size.ToVector2() / 2;
-        protected Color BackColor;  
         protected List<IConnectable> connecting;
         protected List<bool> couldDisconnected;
         protected bool selected;
@@ -26,16 +22,12 @@ namespace Gridly
             Position = pos;
             ID = idCount++;
 
-            BackColor = Color.White;
             connecting = new List<IConnectable>();
             couldDisconnected = new List<bool>();
             friction = .1f;
             Initialized = true;
         }
         
-        public override Rectangle GetBounds()
-            => new Rectangle((Position - Origin).ToPoint(), Resources.PartTexture.Bounds.Size);
-
         public bool IsCollided(Collidable n)
             => GetBounds().Intersects(n.GetBounds());
 
@@ -97,37 +89,6 @@ namespace Gridly
         public abstract void UpdateState();
         public abstract JObject Serialize();
         public abstract void Deserialize(JObject obj, uint[] orgIDs, uint[] newIDs, Part[] parts);
-        public virtual void DrawBack(SpriteBatch sb)
-        {
-            if (selected)
-            {
-                sb.Draw(
-                    Resources.EdgeTexture,
-                    position: Position,
-                    origin: edgeOrigin,
-                    //scale: new Vector2(edgeScale),
-                    color: Color.Green);
-            }
-        }
-        public virtual void DrawSynapse(SpriteBatch sb) { }
-        public virtual void DrawUpperSynapse(SpriteBatch sb)
-        {
-            foreach (var n in connecting)
-            {
-                var ratio80 = new Vector2(
-                    .2f * Position.X + .8f * n.Position.X,
-                    .2f * Position.Y + .8f * n.Position.Y);
-                sb.DrawLine(ratio80, n.Position, 2f, Color.Gray, 0.3f);
-            }
-        }
-        public virtual void Draw(SpriteBatch sb)
-        {
-            sb.Draw(
-                Resources.PartTexture,
-                position: Position,
-                origin: Origin,
-                color: BackColor,
-                layerDepth: .5f);
-        }
+        public virtual void Draw(SpriteBatch sb) { }
     }
 }
