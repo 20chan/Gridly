@@ -13,6 +13,7 @@ namespace Gridly.Parts
 
         public Bulb(Vector2 pos) : base(pos)
         {
+            edgeScale = 1.5f;
             activated = false;
         }
 

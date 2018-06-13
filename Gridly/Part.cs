@@ -11,10 +11,12 @@ namespace Gridly
     {
         private static uint idCount = 0;
         public uint ID { get; }
+        protected float edgeScale = 0.8f;
+        private static Vector2 edgeOrigin = Resources.EdgeTexture.Bounds.Size.ToVector2() / 2;
         protected List<IConnectable> connecting;
         protected List<bool> couldDisconnected;
         protected bool selected;
-
+        
         public bool Initialized { get; protected set; }
 
         public Part(Vector2 pos)
@@ -90,5 +92,17 @@ namespace Gridly
         public abstract JObject Serialize();
         public abstract void Deserialize(JObject obj, uint[] orgIDs, uint[] newIDs, Part[] parts);
         public virtual void Draw(SpriteBatch sb) { }
+        public virtual void DrawBack(SpriteBatch sb)
+        {
+            if (selected)
+            {
+                sb.Draw(
+                    Resources.EdgeTexture,
+                    position: Position,
+                    origin: edgeOrigin,
+                    scale: new Vector2(edgeScale),
+                    color: Color.Green);
+            }
+        }
     }
 }

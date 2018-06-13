@@ -6,8 +6,6 @@ namespace Gridly
     public abstract class Neuron : Part
     {
         protected static Vector2 Origin = Resources.PartTexture.Bounds.Size.ToVector2() / 2;
-        private static float edgeScale = 0.8f;
-        private static Vector2 edgeOrigin = Resources.EdgeTexture.Bounds.Size.ToVector2() / 2;
         protected Color BackColor;
 
         public Neuron(Vector2 pos) : base(pos)
@@ -26,18 +24,6 @@ namespace Gridly
                 origin: Origin,
                 color: BackColor,
                 layerDepth: .5f);
-        }
-        public virtual void DrawBack(SpriteBatch sb)
-        {
-            if (selected)
-            {
-                sb.Draw(
-                    Resources.EdgeTexture,
-                    position: Position,
-                    origin: edgeOrigin,
-                    scale: new Vector2(edgeScale),
-                    color: Color.Green);
-            }
         }
         public virtual void DrawSynapse(SpriteBatch sb) { }
         public virtual void DrawUpperSynapse(SpriteBatch sb)

@@ -142,7 +142,7 @@ namespace Gridly
                 .Where(p => p is Neuron)
                 .Select(p => p as Neuron);
 
-            foreach (var n in neurons)
+            foreach (var n in parts)
                 n.DrawBack(sb);
             foreach (var n in neurons)
                 n.DrawSynapse(sb);
