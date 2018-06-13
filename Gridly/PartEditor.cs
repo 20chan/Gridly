@@ -429,6 +429,8 @@ namespace Gridly
                     parts.Add(BuiltinCircuit.NotCircuit(MousePos));
                 if (IsKeyDown(Keys.O))
                     parts.Add(BuiltinCircuit.OrCircuit(MousePos));
+                if (IsKeyDown(Keys.B))
+                    parts.Add(new Parts.Bulb(MousePos));
             }
         }
 

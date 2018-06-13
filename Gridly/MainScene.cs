@@ -47,6 +47,8 @@ namespace Gridly
 
             Resources.DummyTexture = new Texture2D(GraphicsDevice, 1, 1);
             Resources.DummyTexture.SetData(new[] { Color.White });
+            Resources.BulbOffTexture = Content.Load<Texture2D>("Img/bulb_off");
+            Resources.BulbOnTexture = Content.Load<Texture2D>("Img/bulb_on");
             Resources.PartTexture = Content.Load<Texture2D>("Img/Neuron");
             Resources.EdgeTexture = Content.Load<Texture2D>("Img/edge");
             Resources.DefaultFont = Content.Load<SpriteFont>("defaultFont");

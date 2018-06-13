@@ -6,7 +6,7 @@ namespace Gridly
     public abstract class Neuron : Part
     {
         protected static Vector2 Origin = Resources.PartTexture.Bounds.Size.ToVector2() / 2;
-        private static float edgeScale = 0.2f;
+        private static float edgeScale = 0.8f;
         private static Vector2 edgeOrigin = Resources.EdgeTexture.Bounds.Size.ToVector2() / 2;
         protected Color BackColor;
 
@@ -35,7 +35,7 @@ namespace Gridly
                     Resources.EdgeTexture,
                     position: Position,
                     origin: edgeOrigin,
-                    //scale: new Vector2(edgeScale),
+                    scale: new Vector2(edgeScale),
                     color: Color.Green);
             }
         }
