@@ -57,6 +57,7 @@
     <Compile Include="Part.cs" />
     <Compile Include="PartEditor.cs" />
     <Compile Include="Parts\Bulb.cs" />
+    <Compile Include="Parts\ToggleSwitch.cs" />
     <Compile Include="Times.cs" />
     <Compile Include="UIHelper.cs" />
     <Compile Include="Collidable.cs" />

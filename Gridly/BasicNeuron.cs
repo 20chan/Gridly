@@ -46,18 +46,6 @@ namespace Gridly
             }
         }
 
-        public override void DrawSynapse(SpriteBatch sb)
-        {
-            for (int i = 0; i < connecting.Count; i++)
-            {
-                var n = connecting[i];
-                sb.DrawLine(Position, n.Position, 2f,
-                    couldDisconnected[i]
-                    ? Color.Red
-                    : n is Circuit ? Color.Orange : Color.White, 0.5f);
-            }
-        }
-
         public override void Draw(SpriteBatch sb)
         {
             BackColor = Activated ? Color.Blue : DefaultColor;

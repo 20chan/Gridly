@@ -25,16 +25,5 @@ namespace Gridly
                 color: BackColor,
                 layerDepth: .5f);
         }
-        public virtual void DrawSynapse(SpriteBatch sb) { }
-        public virtual void DrawUpperSynapse(SpriteBatch sb)
-        {
-            foreach (var n in connecting)
-            {
-                var ratio80 = new Vector2(
-                    .2f * Position.X + .8f * n.Position.X,
-                    .2f * Position.Y + .8f * n.Position.Y);
-                sb.DrawLine(ratio80, n.Position, 2f, Color.Gray, 0.3f);
-            }
-        }
     }
 }

@@ -138,15 +138,11 @@ namespace Gridly
 
         public void Draw(SpriteBatch sb)
         {
-            var neurons = parts
-                .Where(p => p is Neuron)
-                .Select(p => p as Neuron);
-
             foreach (var n in parts)
                 n.DrawBack(sb);
-            foreach (var n in neurons)
+            foreach (var n in parts)
                 n.DrawSynapse(sb);
-            foreach (var n in neurons)
+            foreach (var n in parts)
                 n.DrawUpperSynapse(sb);
             foreach (var n in parts)
                 n.Draw(sb);
@@ -290,9 +286,12 @@ namespace Gridly
                 {
                     if (IsKeyPressing(Keys.LeftShift))
                     {
-                        connectFromSelects = selectedParts.Contains(n);
-                        connectFrom = n;
-                        state = EditorState.NEURON_CONNECTING;
+                        if (n.HaveOutput)
+                        {
+                            connectFromSelects = selectedParts.Contains(n);
+                            connectFrom = n;
+                            state = EditorState.NEURON_CONNECTING;
+                        }
                     }
                     else
                     {
@@ -431,6 +430,8 @@ namespace Gridly
                     parts.Add(BuiltinCircuit.OrCircuit(MousePos));
                 if (IsKeyDown(Keys.B))
                     parts.Add(new Parts.Bulb(MousePos));
+                if (IsKeyDown(Keys.T))
+                    parts.Add(new Parts.ToggleSwitch(MousePos));
             }
         }
 

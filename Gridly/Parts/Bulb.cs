@@ -15,6 +15,7 @@ namespace Gridly.Parts
         {
             edgeScale = 1.5f;
             activated = false;
+            HaveOutput = false;
         }
 
         public override void Activate(IConnectable from)

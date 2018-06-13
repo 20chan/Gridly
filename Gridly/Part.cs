@@ -16,7 +16,8 @@ namespace Gridly
         protected List<IConnectable> connecting;
         protected List<bool> couldDisconnected;
         protected bool selected;
-        
+
+        public bool HaveOutput { get; protected set; } = true;
         public bool Initialized { get; protected set; }
 
         public Part(Vector2 pos)
@@ -102,6 +103,27 @@ namespace Gridly
                     origin: edgeOrigin,
                     scale: new Vector2(edgeScale),
                     color: Color.Green);
+            }
+        }
+        public virtual void DrawSynapse(SpriteBatch sb)
+        {
+            for (int i = 0; i < connecting.Count; i++)
+            {
+                var n = connecting[i];
+                sb.DrawLine(Position, n.Position, 2f,
+                    couldDisconnected[i]
+                    ? Color.Red
+                    : n is Circuit ? Color.Orange : Color.White, 0.5f);
+            }
+        }
+        public virtual void DrawUpperSynapse(SpriteBatch sb)
+        {
+            foreach (var n in connecting)
+            {
+                var ratio80 = new Vector2(
+                    .2f * Position.X + .8f * n.Position.X,
+                    .2f * Position.Y + .8f * n.Position.Y);
+                sb.DrawLine(ratio80, n.Position, 2f, Color.Gray, 0.3f);
             }
         }
     }
