@@ -70,6 +70,9 @@ namespace Gridly
         public static BuiltinCircuit OrCircuit(Vector2 pos)
             => new BuiltinCircuit(pos, 'O', inputs => inputs.Any(i => i));
 
+        public static BuiltinCircuit XorCircuit(Vector2 pos)
+            => new BuiltinCircuit(pos, 'X', inputs => inputs.Count() == 2 ? inputs.First() ^ inputs.ElementAt(1) : false);
+
         public override void Deserialize(JObject obj, uint[] orgIDs, uint[] newIDs, Part[] parts)
         {
             var conns = obj["Connecting"].ToObject<uint[]>();
@@ -108,6 +111,8 @@ namespace Gridly
                     return NotCircuit(pos);
                 case 'O':
                     return OrCircuit(pos);
+                case 'X':
+                    return XorCircuit(pos);
                 default:
                     throw new Exception();
             }
