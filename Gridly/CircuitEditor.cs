@@ -39,17 +39,13 @@ namespace Gridly
 
         protected void SetInput(BasicNeuron n)
         {
-            n.DefaultColor = Color.Orange;
-            n.DisplayNumber = true;
-            n.Number = inputNeurons.Count;
+            n.SetInputNeuron(inputNeurons.Count);
             inputNeurons.Add(n);
         }
 
         protected void SetOutput(BasicNeuron n)
         {
-            n.DefaultColor = Color.LightBlue;
-            n.DisplayNumber = true;
-            n.Number = outputNeurons.Count;
+            n.SetOutputNeuron(outputNeurons.Count);
             outputNeurons.Add(n);
         }
 

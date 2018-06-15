@@ -10,23 +10,38 @@ namespace Gridly
 {
     public class BasicNeuron : Neuron
     {
+        public bool IsDeletable { get; private set; } = true;
         public bool Activated { get; private set; }
         public Color DefaultColor { get; set; }
         private bool shouldActivate = false;
-
-        public bool DisplayNumber { get; set; }
-        public int Number { get; set; }
+        
+        private bool displayNumber;
+        private int number;
 
         public BasicNeuron(Vector2 pos) : base(pos)
         {
             Activated = false;
             DefaultColor = Color.White;
-            DisplayNumber = false;
+            displayNumber = false;
         }
 
         public BasicNeuron() : this(Vector2.Zero)
         {
             Initialized = false;
+        }
+
+        public void SetInputNeuron(int number)
+        {
+            DefaultColor = Color.Orange;
+            displayNumber = true;
+            this.number = number;
+        }
+
+        public void SetOutputNeuron(int number)
+        {
+            DefaultColor = Color.LightBlue;
+            displayNumber = true;
+            this.number = number;
         }
 
         public override void UpdateSynapse()
@@ -55,10 +70,10 @@ namespace Gridly
 
         public void DrawNumber(SpriteBatch sb)
         {
-            if (DisplayNumber)
+            if (displayNumber)
             {
                 sb.DrawString(Resources.DefaultFont,
-                    Number.ToString(),
+                    number.ToString(),
                     new Vector2(Position.X + 10, Position.Y),
                     Color.Black);
             }

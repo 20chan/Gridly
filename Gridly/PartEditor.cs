@@ -436,22 +436,6 @@ namespace Gridly
                     parts.Add(new Parts.Bulb(MousePos));
                 if (IsKeyDown(Keys.T))
                     parts.Add(new Parts.ToggleSwitch(MousePos));
-                if (IsKeyDown(Keys.F1))
-                {
-                    var inputs = new bool[][] { new bool []{ true, true }, 
-                        new bool[] { true, false } };
-                    var outputs = new bool[][] { new bool[] { false, true } };
-                    var stage = new Stage(this as DefaultPartEditor,
-                        new TestCase(inputs, outputs));
-                    stage.Serialize().WriteToFile("stage.json");
-                }
-                if (IsKeyDown(Keys.F2))
-                {
-                    var obj = SerializeHelper.LoadFromFile("stage.json");
-                    var stage = new Stage(this as DefaultPartEditor);
-                    stage.Deserialize(obj);
-
-                }
             }
         }
 
