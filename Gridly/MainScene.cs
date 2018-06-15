@@ -9,6 +9,8 @@ namespace Gridly
 {
     public sealed class MainScene : Game
     {
+        public static GUIManager CurrentGUI;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Random random;
@@ -35,6 +37,7 @@ namespace Gridly
 
             random = new Random();
             guiManager = new GUIManager();
+            CurrentGUI = guiManager;
             scale = Matrix.CreateScale(2);
 
             base.Initialize();

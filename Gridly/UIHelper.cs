@@ -39,6 +39,9 @@ namespace Gridly
             sb.Draw(Resources.DummyTexture, new Rectangle(rect.X, rect.Y + rect.Height, rect.Width + border, border), color);
         }
 
+        public static void DrawString(this SpriteBatch sb, SpriteFont font, string text, Alignment align, Vector2 pos, Color color, float rotation)
+            => DrawString(sb, font, text, align, new Rectangle(pos.ToPoint(), font.MeasureString(text).ToPoint()), color, rotation);
+
         public static void DrawString(this SpriteBatch sb, SpriteFont font, string text, Alignment align, Rectangle bound, Color color, float rotation)
         {
             Vector2 size = font.MeasureString(text);

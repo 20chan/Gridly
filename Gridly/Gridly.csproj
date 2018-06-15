@@ -80,6 +80,7 @@
     <Compile Include="UI\GUI.cs" />
     <Compile Include="UI\GUIManager.cs" />
     <Compile Include="UI\ISquareUI.cs" />
+    <Compile Include="UI\Label.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
