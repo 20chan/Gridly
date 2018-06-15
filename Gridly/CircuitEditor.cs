@@ -89,45 +89,7 @@ namespace Gridly
                 => (BasicNeuron)parts.First(p => p.ID == id);
         }
 
-        public void DeserializeParts(JArray arr, out uint[] refIDs, out uint[] newIDs)
-        {
-            refIDs = new uint[arr.Count];
-            newIDs = new uint[arr.Count];
-
-            parts.Clear();
-            int i = 0;
-            foreach (JObject p in arr)
-            {
-                Part part = null;
-                var type = (int)p["Type"];
-                if (type == 2)
-                {
-                    var ch = p["Character"].ToObject<char>();
-                    part = BuiltinCircuit.FromChar(Vector2.Zero, ch);
-                }
-                else if (type == 0)
-                    part = new BasicNeuron();
-                else if (type == 1)
-                    part = new EditableCircuit();
-                else
-                    throw new Exception();
-
-                var pos = p["Position"];
-                part.Position = new Vector2((float)pos["x"], (float)pos["y"]);
-                refIDs[i] = (uint)p["ID"];
-                newIDs[i] = part.ID;
-                parts.Add(part);
-                i++;
-            }
-            for (i = 0; i < parts.Count; i++)
-            {
-                parts[i].Deserialize((JObject)arr[i], refIDs, newIDs, parts.ToArray());
-                if (parts[i] is EditableCircuit c)
-                    childEditors.Add(c.Editor);
-            }
-        }
-
-        protected override JObject Serialize()
+        public override JObject Serialize()
         {
             var res = self.Serialize();
             // 루트 회로의 연결들은 비어있어야 한다

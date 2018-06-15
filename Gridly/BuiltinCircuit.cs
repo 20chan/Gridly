@@ -70,6 +70,9 @@ namespace Gridly
         public static BuiltinCircuit OrCircuit(Vector2 pos)
             => new BuiltinCircuit(pos, 'O', inputs => inputs.Any(i => i));
 
+        public static BuiltinCircuit NorCircuit(Vector2 pos)
+            => new BuiltinCircuit(pos, 'R', inputs => !inputs.Any(i => i));
+
         public static BuiltinCircuit XorCircuit(Vector2 pos)
             => new BuiltinCircuit(pos, 'X', inputs => inputs.Count() == 2 ? inputs.First() ^ inputs.ElementAt(1) : false);
 
@@ -85,8 +88,8 @@ namespace Gridly
 
             Initialized = true;
 
-            BasicNeuron Match(uint id)
-                => (BasicNeuron)parts.First(p => p.ID == id);
+            Part Match(uint id)
+                => parts.First(p => p.ID == id);
         }
 
         public override JObject Serialize()
@@ -114,7 +117,8 @@ namespace Gridly
                 case 'X':
                     return XorCircuit(pos);
                 default:
-                    throw new Exception();
+                case 'R':
+                    return NorCircuit(pos);
             }
         }
     }

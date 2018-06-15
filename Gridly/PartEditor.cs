@@ -428,12 +428,30 @@ namespace Gridly
                     parts.Add(BuiltinCircuit.NotCircuit(MousePos));
                 if (IsKeyDown(Keys.O))
                     parts.Add(BuiltinCircuit.OrCircuit(MousePos));
+                if (IsKeyDown(Keys.R))
+                    parts.Add(BuiltinCircuit.NorCircuit(MousePos));
                 if (IsKeyDown(Keys.X))
                     parts.Add(BuiltinCircuit.XorCircuit(MousePos));
                 if (IsKeyDown(Keys.B))
                     parts.Add(new Parts.Bulb(MousePos));
                 if (IsKeyDown(Keys.T))
                     parts.Add(new Parts.ToggleSwitch(MousePos));
+                if (IsKeyDown(Keys.F1))
+                {
+                    var inputs = new bool[][] { new bool []{ true, true }, 
+                        new bool[] { true, false } };
+                    var outputs = new bool[][] { new bool[] { false, true } };
+                    var stage = new Stage(this as DefaultPartEditor,
+                        new TestCase(inputs, outputs));
+                    stage.Serialize().WriteToFile("stage.json");
+                }
+                if (IsKeyDown(Keys.F2))
+                {
+                    var obj = SerializeHelper.LoadFromFile("stage.json");
+                    var stage = new Stage(this as DefaultPartEditor);
+                    stage.Deserialize(obj);
+
+                }
             }
         }
 
@@ -450,8 +468,46 @@ namespace Gridly
             part = null;
             return false;
         }
+        
+        public void DeserializeParts(JArray arr, out uint[] refIDs, out uint[] newIDs)
+        {
+            refIDs = new uint[arr.Count];
+            newIDs = new uint[arr.Count];
 
-        protected abstract JObject Serialize();
+            parts.Clear();
+            int i = 0;
+            foreach (JObject p in arr)
+            {
+                Part part = null;
+                var type = (int)p["Type"];
+                if (type == 2)
+                {
+                    var ch = p["Character"].ToObject<char>();
+                    part = BuiltinCircuit.FromChar(Vector2.Zero, ch);
+                }
+                else if (type == 0)
+                    part = new BasicNeuron();
+                else if (type == 1)
+                    part = new EditableCircuit();
+                else
+                    throw new Exception();
+
+                var pos = p["Position"];
+                part.Position = new Vector2((float)pos["x"], (float)pos["y"]);
+                refIDs[i] = (uint)p["ID"];
+                newIDs[i] = part.ID;
+                parts.Add(part);
+                i++;
+            }
+            for (i = 0; i < parts.Count; i++)
+            {
+                parts[i].Deserialize((JObject)arr[i], refIDs, newIDs, parts.ToArray());
+                if (parts[i] is EditableCircuit c)
+                    childEditors.Add(c.Editor);
+            }
+        }
+
+        public abstract JObject Serialize();
         public abstract void Deserialize(JObject arr);
     }
 }

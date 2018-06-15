@@ -1,12 +1,16 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Gridly
 {
     public class DefaultPartEditor : PartEditor
     {
-        protected override JObject Serialize()
+        public override JObject Serialize()
         {
-            throw new System.NotImplementedException();
+            return new JObject()
+            {
+                { "Parts", JArray.FromObject(parts.Select(p => p.Serialize())) }
+            };
         }
 
         public override void Deserialize(JObject arr)

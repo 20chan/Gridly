@@ -58,6 +58,9 @@
     <Compile Include="PartEditor.cs" />
     <Compile Include="Parts\Bulb.cs" />
     <Compile Include="Parts\ToggleSwitch.cs" />
+    <Compile Include="SerializeHelper.cs" />
+    <Compile Include="Stage.cs" />
+    <Compile Include="TestCase.cs" />
     <Compile Include="Times.cs" />
     <Compile Include="UIHelper.cs" />
     <Compile Include="Collidable.cs" />

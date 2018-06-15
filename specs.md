@@ -117,3 +117,38 @@ i*(5) <-> o (6) --> o*(7)
     ]
 }
 ```
+
+### Stage
+
+스테이지의 직렬화는 다음의 포맷으로 이루어진다.
+
+```json
+{
+    "Parts": [
+
+    ],
+    "TestCases": [
+        {
+            "input": [
+                [false, false, true, true],
+                [true, true, false, true]
+            ],
+            "output": [
+                [false, false, false, true]
+            ]
+        },
+        {
+            "input": [
+                [true, true],
+                [true, false]
+            ],
+            "output": [
+                [true, true, false]
+            ]
+        }
+    ]
+}
+```
+
+- `Parts`: 메인 에디터에 출력될 파트들
+- `TestCases`: 테스트 케이스의 리스트. 하나의 테스트 케이스는 2차원 배열의 입력/출력으로 이루어짐.
