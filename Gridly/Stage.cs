@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
 namespace Gridly
 {
     public class Stage
     {
-        uint[] inputNeurons, outputNeurons;
+        List<uint> inputNeurons, outputNeurons;
         TestCase[] cases;
 
         public Stage(params TestCase[] testcases)
@@ -27,12 +28,24 @@ namespace Gridly
         {
             cases = obj["TestCases"].Select(t => TestCase.Deserialize(t)).ToArray();
             editor.DeserializeParts(JArray.FromObject(obj["Parts"]), out var orgIds, out var newIds);
-            inputNeurons = (from int i in obj["Inputs"]
-                            let idx = Array.IndexOf(orgIds, i)
-                            select newIds[idx]).ToArray();
-            outputNeurons = (from int i in obj["Outputs"]
-                             let idx = Array.IndexOf(orgIds, i)
-                             select newIds[idx]).ToArray();
+            inputNeurons = new List<uint>();
+            outputNeurons = new List<uint>();
+            foreach (uint i in obj["Inputs"])
+                SetInputNeuron(editor.FromID(newIds[Array.IndexOf(orgIds, i)]) as BasicNeuron);
+            foreach (uint i in obj["Outputs"])
+                SetOutputNeuron(editor.FromID(newIds[Array.IndexOf(orgIds, i)]) as BasicNeuron);
+        }
+
+        public void SetInputNeuron(BasicNeuron neuron)
+        {
+            neuron.SetInputNeuron(inputNeurons.Count);
+            inputNeurons.Add(neuron.ID);
+        }
+
+        public void SetOutputNeuron(BasicNeuron neuron)
+        {
+            neuron.SetOutputNeuron(outputNeurons.Count);
+            outputNeurons.Add(neuron.ID);
         }
     }
 }
