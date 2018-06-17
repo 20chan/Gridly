@@ -116,5 +116,17 @@ namespace Gridly
             
             elapsedTick++;
         }
+
+        public void Log()
+        {
+            Console.WriteLine($"Expected outputs:");
+            for (int i = 0; i < cases[0].Outputs.Length; i++)
+                Console.WriteLine($"{i}: {string.Join(",", cases[0].Outputs[i])}");
+
+            Console.WriteLine($"Actual outputs stacks:");
+            for (int i = 0; i < cases[0].Outputs.Length; i++)
+                Console.WriteLine($"{i}: {string.Join(",", outputStack[i].Skip(outputCheckIndex + 1))}");
+            Console.WriteLine();
+        }
     }
 }

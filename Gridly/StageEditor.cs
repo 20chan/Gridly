@@ -66,6 +66,7 @@ namespace Gridly
             if (started)
             {
                 stage.Tick();
+                stage.Log();
                 if (stage.Succeed)
                 {
                     started = false;
