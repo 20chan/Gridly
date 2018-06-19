@@ -19,6 +19,7 @@ namespace Gridly.UI
         }
 
         private Label[] inputLabels, outputLabels;
+        private Label[][] inputValueLabels, outputValueLabels;
 
         public TestCaseVisualizer(int x, int y, int width, int height, Tester tc = null)
         {
@@ -42,16 +43,55 @@ namespace Gridly.UI
         {
             _test = tc;
             if (tc?.TestCase == null) return;
+
             inputLabels = new Label[tc.Inputs.Length];
             outputLabels = new Label[tc.Outputs.Length];
-            var labHeight = 30;
-            for (int i = 0; i < inputLabels.Length; i++)
-                inputLabels[i] = new LazyLabel(10 + X, 10 + Y + i * labHeight, 
-                    () => $"Input {i + 1}: {string.Join(",", tc.Inputs[i])}", Alignment.Left);
+            inputValueLabels = new Label[tc.Inputs.Length][];
+            outputValueLabels = new Label[tc.Outputs.Length][];
 
+            var labHeight = 30;
+            var labgap = 45;
+            for (int i = 0; i < inputLabels.Length; i++)
+            {
+                inputLabels[i] = new Label(10 + X, 10 + Y + i * labHeight,
+                    $"Input {i + 1}:", Alignment.Left);
+                inputValueLabels[i] = new Label[tc.Inputs[i].Length];
+                for (int j = 0; j < inputValueLabels[i].Length; j++)
+                    inputValueLabels[i][j] = new Label(60 + X + j * labgap, 10 + Y + i * labHeight,
+                        tc.Inputs[i][j].ToString(), Alignment.Center);
+            }
             for (int i = 0; i < outputLabels.Length; i++)
-                outputLabels[i] = new LazyLabel(10 + Width / 2, 10 + Y + i * labHeight,
-                    () => $"Output {i + 1}: {string.Join(",", tc.Outputs[i])}", Alignment.Left);
+            {
+                int x = 10 + Width / 2;
+                outputLabels[i] = new Label(x, 10 + Y + i * labHeight,
+                    $"Output {i + 1}:", Alignment.Left);
+                outputValueLabels[i] = new Label[tc.Outputs[i].Length];
+                for (int j = 0; j < outputValueLabels[i].Length; j++)
+                    outputValueLabels[i][j] = new Label(70 + x + j * labgap, 10 + Y + i * labHeight,
+                        tc.Outputs[i][j].ToString(), Alignment.Center);
+            }
+        }
+
+        public void UpdateUI()
+        {
+            foreach (var ls in inputValueLabels)
+            {
+                if (Tester.ElapsedTick < ls.Length)
+                    ls[Tester.ElapsedTick].ForeColor = Color.Blue;
+            }
+
+            foreach (var ls in outputValueLabels)
+            {
+                if (Tester.CorcondanceCount == 0)
+                {
+                    foreach (var l in ls)
+                        l.ForeColor = Color.Black;
+                }
+                else
+                {
+                    ls[Tester.CorcondanceCount - 1].ForeColor = Color.Blue;
+                }
+            }
         }
 
         protected Rectangle GetBounds()
@@ -77,6 +117,13 @@ namespace Gridly.UI
                     l.Draw(sb);
                 foreach (var l in outputLabels)
                     l.Draw(sb);
+
+                foreach (var ls in inputValueLabels)
+                    foreach (var l in ls)
+                        l.Draw(sb);
+                foreach (var ls in outputValueLabels)
+                    foreach (var l in ls)
+                        l.Draw(sb);
             }
         }
     }

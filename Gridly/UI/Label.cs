@@ -10,7 +10,7 @@ namespace Gridly.UI
         public Alignment Alignment { get; set; }
         public Color ForeColor { get; set; } = Color.Black;
         public SpriteFont Font { get; set; } = null;
-        private Rectangle bound;
+        public Rectangle Bound { get; protected set; }
 
         public int X { get; set; }
         public int Y { get; set; }
@@ -25,7 +25,7 @@ namespace Gridly.UI
 
         public override void Draw(SpriteBatch sb)
         {
-            bound = sb.DrawString(
+            Bound = sb.DrawString(
                 Font ?? Resources.DefaultFont,
                 Text,
                 Alignment,
@@ -41,7 +41,7 @@ namespace Gridly.UI
 
         public override bool IsHovering(Vector2 pos)
         {
-            return bound.Contains(pos);
+            return Bound.Contains(pos);
         }
     }
 }
