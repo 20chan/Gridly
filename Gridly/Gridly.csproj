@@ -53,6 +53,7 @@
     <Compile Include="IConnectable.cs" />
     <Compile Include="INeedInput.cs" />
     <Compile Include="Inputs.cs" />
+    <Compile Include="IScene.cs" />
     <Compile Include="Neuron.cs" />
     <Compile Include="Part.cs" />
     <Compile Include="PartEditor.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="SerializeHelper.cs" />
     <Compile Include="Stage.cs" />
     <Compile Include="StageEditor.cs" />
+    <Compile Include="StageSelector.cs" />
     <Compile Include="TestCase.cs" />
     <Compile Include="Tester.cs" />
     <Compile Include="Times.cs" />

@@ -12,7 +12,7 @@ using System;
 
 namespace Gridly
 {
-    public abstract class PartEditor
+    public abstract class PartEditor : IScene
     {
         public bool Enabled { get; set; }
         protected List<Part> parts;
@@ -47,6 +47,7 @@ namespace Gridly
 
         public void Update()
         {
+            UpdateTick();
             UpdatePartInput();
             UpdateByStates();
             UpdateAbove();
@@ -56,6 +57,9 @@ namespace Gridly
         public void UpdateTick()
         {
             remainingDelay -= (float)Times.TotalElapsedSeconds;
+
+            if (IsKeyDown(Keys.S))
+                SkipTick();
 
             if (remainingDelay <= 0)
             {
