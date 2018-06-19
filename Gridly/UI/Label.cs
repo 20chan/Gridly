@@ -12,8 +12,13 @@ namespace Gridly.UI
         public SpriteFont Font { get; set; } = null;
         private Rectangle bound;
 
-        public Label(string text, Alignment alignment = Alignment.Left | Alignment.Top)
+        public int X { get; set; }
+        public int Y { get; set; }
+
+        public Label(int x, int y, string text, Alignment alignment = Alignment.Left | Alignment.Top)
         {
+            X = x;
+            Y = y;
             Text = text;
             Alignment = alignment;
         }
@@ -24,7 +29,7 @@ namespace Gridly.UI
                 Font ?? Resources.DefaultFont,
                 Text,
                 Alignment,
-                new Vector2(),
+                new Vector2(X, Y),
                 ForeColor,
                 0);
         }

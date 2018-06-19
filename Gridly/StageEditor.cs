@@ -17,7 +17,7 @@ namespace Gridly
         {
             this.path = path;
             stage = Stage.Load(this, SerializeHelper.LoadFromFile(path));
-            statusLabel = new Label("");
+            statusLabel = new Label(20, 20, "");
             MainScene.CurrentGUI.Add(statusLabel);
             MainScene.CurrentGUI.Add(stage.Visualizer);
         }

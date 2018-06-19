@@ -62,6 +62,7 @@
     <Compile Include="Stage.cs" />
     <Compile Include="StageEditor.cs" />
     <Compile Include="TestCase.cs" />
+    <Compile Include="Tester.cs" />
     <Compile Include="Times.cs" />
     <Compile Include="UIHelper.cs" />
     <Compile Include="Collidable.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="UI\GUIManager.cs" />
     <Compile Include="UI\ISquareUI.cs" />
     <Compile Include="UI\Label.cs" />
+    <Compile Include="UI\LazyLabel.cs" />
     <Compile Include="UI\TestCaseVisualizer.cs" />
   </ItemGroup>
   <ItemGroup>

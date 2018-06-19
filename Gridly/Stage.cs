@@ -11,9 +11,11 @@ namespace Gridly
         public bool Succeed { get; private set; }
         List<BasicNeuron> inputNeurons, outputNeurons;
         TestCase[] cases;
-        int elapsedTick = 0;
         int inputLength, outputLength;
+
+        Tester curTester;
         List<bool>[] outputStack;
+        int elapsedTick;
         int outputCheckIndex;
 
         public TestCaseVisualizer Visualizer { get; private set; }
@@ -52,6 +54,9 @@ namespace Gridly
             outputStack = new List<bool>[cases[0].Outputs.Length];
             for (int i = 0; i < cases[0].Outputs.Length; i++)
                 outputStack[i] = new List<bool>();
+
+            curTester = new Tester(cases[0]);
+            Visualizer.Tester = curTester;
         }
 
         public void SetInputNeuron(BasicNeuron neuron)
@@ -80,25 +85,26 @@ namespace Gridly
             // TODO: 테케 인덱스 설정
             currentTestCase = 0;
             outputCheckIndex = 0;
+
+            Visualizer.Tester = curTester;
         }
 
         public void Tick()
         {
             if (elapsedTick < inputLength)
                 for (int i = 0; i < inputNeurons.Count; i++)
-                    if (cases[currentTestCase].Inputs[i][elapsedTick])
+                    if (curTester.Inputs[i][elapsedTick])
                         inputNeurons[i].ActivateImmediate();
 
             for (int i = 0; i < outputStack.Length; i++)
                 outputStack[i].Add(outputNeurons[i].Activated);
 
             bool allCorrect = true;
-            var curcase = cases[currentTestCase];
             for (int i = 0; i < outputLength; i++)
             {
                 for (int idx = outputCheckIndex; idx < outputLength; idx++)
                 {
-                    if (outputStack[i][idx] != curcase.Outputs[i][idx - outputCheckIndex])
+                    if (outputStack[i][idx] != curTester.Outputs[i][idx - outputCheckIndex])
                     {
                         allCorrect = false;
                         break;
@@ -109,17 +115,19 @@ namespace Gridly
             }
             if (allCorrect)
             {
+                curTester.CorcondanceCount = elapsedTick - outputCheckIndex;
                 if (elapsedTick - outputCheckIndex == outputLength)
                 {
+                    curTester.Succeed = true;
                     Succeed = true;
                 }
             }
             else
             {
                 outputCheckIndex = elapsedTick + 1;
+                curTester.CorcondanceCount = 0;
             }
-            
-            elapsedTick++;
+            curTester.ElapsedTick = ++elapsedTick;
         }
 
         public void Log()
