@@ -79,7 +79,7 @@ namespace Gridly
             }
 
             Succeed = false;
-            elapsedTick = 0;
+            elapsedTick = -1;
             foreach (var stack in outputStack)
                 stack.Clear();
             // TODO: 테케 인덱스 설정
@@ -91,6 +91,7 @@ namespace Gridly
 
         public void Tick()
         {
+            elapsedTick++;
             if (elapsedTick < inputLength)
                 for (int i = 0; i < inputNeurons.Count; i++)
                     if (curTester.Inputs[i][elapsedTick])
@@ -100,9 +101,9 @@ namespace Gridly
                 outputStack[i].Add(outputNeurons[i].Activated);
 
             bool allCorrect = true;
-            for (int i = 0; i < outputLength; i++)
+            for (int i = 0; i < outputStack.Length; i++)
             {
-                for (int idx = outputCheckIndex; idx < outputLength; idx++)
+                for (int idx = outputCheckIndex; idx < outputStack[i].Count; idx++)
                 {
                     if (outputStack[i][idx] != curTester.Outputs[i][idx - outputCheckIndex])
                     {
@@ -115,8 +116,9 @@ namespace Gridly
             }
             if (allCorrect)
             {
-                curTester.CorcondanceCount = elapsedTick - outputCheckIndex;
-                if (elapsedTick - outputCheckIndex == outputLength)
+                var cnt = outputStack[0].Count - outputCheckIndex;
+                curTester.CorcondanceCount = cnt;
+                if (cnt == outputLength)
                 {
                     curTester.Succeed = true;
                     Succeed = true;
@@ -124,10 +126,32 @@ namespace Gridly
             }
             else
             {
-                outputCheckIndex = elapsedTick + 1;
-                curTester.CorcondanceCount = 0;
+                // 최대의 outputCheckIndex를 찾기
+                int i = outputCheckIndex;
+                for (; i < outputStack[0].Count; i++)
+                {
+                    allCorrect = true;
+                    for (int j = 0; j < outputStack.Length; j++)
+                    {
+                        for (int idx = i; idx < outputStack[j].Count; idx++)
+                        {
+                            if (outputStack[j][idx] != curTester.Outputs[j][idx - i])
+                            {
+                                allCorrect = false;
+                                break;
+                            }
+                        }
+                        if (!allCorrect)
+                            break;
+                    }
+                    if (allCorrect)
+                        break;
+                }
+                outputCheckIndex = i;
+                curTester.CorcondanceCount = outputStack[0].Count - outputCheckIndex;
             }
-            curTester.ElapsedTick = ++elapsedTick;
+            curTester.ElapsedTick = elapsedTick;
+            Visualizer.UpdateUI();
         }
 
         public void Log()
@@ -138,7 +162,7 @@ namespace Gridly
 
             Console.WriteLine($"Actual outputs stacks:");
             for (int i = 0; i < cases[0].Outputs.Length; i++)
-                Console.WriteLine($"{i}: {string.Join(",", outputStack[i].Skip(outputCheckIndex + 1))}");
+                Console.WriteLine($"{i}: {string.Join(",", outputStack[i].Skip(outputCheckIndex))}");
             Console.WriteLine();
         }
 

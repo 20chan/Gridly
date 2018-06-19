@@ -82,15 +82,10 @@ namespace Gridly.UI
 
             foreach (var ls in outputValueLabels)
             {
-                if (Tester.CorcondanceCount == 0)
-                {
-                    foreach (var l in ls)
-                        l.ForeColor = Color.Black;
-                }
-                else
-                {
-                    ls[Tester.CorcondanceCount - 1].ForeColor = Color.Blue;
-                }
+                for (int i = Tester.CorcondanceCount; i < ls.Length; i++)
+                    ls[i].ForeColor = Color.Black;
+                if (Tester.CorcondanceCount > 0)
+                ls[Tester.CorcondanceCount - 1].ForeColor = Color.Blue;
             }
         }
 
