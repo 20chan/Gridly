@@ -28,7 +28,7 @@ namespace Gridly.UI
         private Rectangle ExpandRect(Rectangle r, int value)
             => new Rectangle(r.X - value, r.Y - value, r.Width + value * 2, r.Height + value * 2);
 
-        protected override bool IsHovering(Vector2 pos)
+        public override bool IsHovering(Vector2 pos)
             => GetBounds().Contains(pos);
 
         public override void Draw(SpriteBatch sb)

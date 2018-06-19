@@ -10,6 +10,8 @@ namespace Gridly
     public sealed class MainScene : Game
     {
         public static GUIManager CurrentGUI;
+        public static readonly int Width = 1920 / 2;
+        public static readonly int Height = 1080 / 2;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -68,7 +70,9 @@ namespace Gridly
             Inputs.Update();
             Times.Update(gameTime);
 
-            isUIHandledInput = guiManager.HandleInput();
+            isUIHandledInput = guiManager.HandleInput(out var anyUIHovering);
+            Inputs.UIHandledMouse = isUIHandledInput;
+            Inputs.MouseHoverUI = anyUIHovering;
             UpdateUIEvent();
             if (!paused)
             {

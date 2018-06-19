@@ -106,8 +106,6 @@ namespace Gridly.UI
 
             return HandleInputs();
         }
-
-        protected abstract bool IsHovering(Vector2 pos);
         protected abstract bool HandleInputs();
     }
 }

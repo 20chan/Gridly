@@ -85,12 +85,14 @@ namespace Gridly
             if (state == EditorState.OTHER_EDITOR_ABOVE)
                 return;
 
-            if (IsRightMouseDown())
-                if (state == EditorState.IDEAL)
-                    SpawnAt(MousePos, IsKeyPressing(Keys.LeftShift));
+            if (!MouseHoverUI)
+                if (IsRightMouseDown())
+                    if (state == EditorState.IDEAL)
+                        SpawnAt(MousePos, IsKeyPressing(Keys.LeftShift));
 
-            if (IsLeftMouseDown())
-                HandleDragSelectConnect();
+            if (!MouseHoverUI)
+                if (IsLeftMouseDown())
+                    HandleDragSelectConnect();
 
             if (IsLeftMouseUp())
                 EndDragConnect();

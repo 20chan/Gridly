@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using Gridly.UI;
 
 namespace Gridly
 {
@@ -15,13 +16,17 @@ namespace Gridly
         List<bool>[] outputStack;
         int outputCheckIndex;
 
+        public TestCaseVisualizer Visualizer { get; private set; }
+
         int currentTestCase;
 
-        public Stage(params TestCase[] testcases)
+        protected Stage(params TestCase[] testcases)
         {
             cases = testcases;
             inputNeurons = new List<BasicNeuron>();
             outputNeurons = new List<BasicNeuron>();
+
+            Visualizer = new TestCaseVisualizer();
         }
 
         public JObject Serialize(StageEditor editor)
@@ -33,7 +38,7 @@ namespace Gridly
             return obj;
         }
 
-        public void Deserialize(StageEditor editor, JObject obj)
+        protected void Deserialize(StageEditor editor, JObject obj)
         {
             cases = obj["TestCases"].Select(t => TestCase.Deserialize(t)).ToArray();
             inputLength = cases[0].Inputs[0].Length;
@@ -127,6 +132,13 @@ namespace Gridly
             for (int i = 0; i < cases[0].Outputs.Length; i++)
                 Console.WriteLine($"{i}: {string.Join(",", outputStack[i].Skip(outputCheckIndex + 1))}");
             Console.WriteLine();
+        }
+
+        public static Stage Load(StageEditor editor, JObject obj)
+        {
+            var stage = new Stage();
+            stage.Deserialize(editor, obj);
+            return stage;
         }
     }
 }

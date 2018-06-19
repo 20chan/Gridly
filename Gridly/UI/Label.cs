@@ -10,6 +10,7 @@ namespace Gridly.UI
         public Alignment Alignment { get; set; }
         public Color ForeColor { get; set; } = Color.Black;
         public SpriteFont Font { get; set; } = null;
+        private Rectangle bound;
 
         public Label(string text, Alignment alignment = Alignment.Left | Alignment.Top)
         {
@@ -19,7 +20,7 @@ namespace Gridly.UI
 
         public override void Draw(SpriteBatch sb)
         {
-            sb.DrawString(
+            bound = sb.DrawString(
                 Font ?? Resources.DefaultFont,
                 Text,
                 Alignment,
@@ -31,6 +32,11 @@ namespace Gridly.UI
         public override bool ProcessInput()
         {
             return false;
+        }
+
+        public override bool IsHovering(Vector2 pos)
+        {
+            return bound.Contains(pos);
         }
     }
 }

@@ -16,10 +16,10 @@ namespace Gridly
         public StageEditor(string path)
         {
             this.path = path;
-            stage = new Stage();
-            stage.Deserialize(this, SerializeHelper.LoadFromFile(path));
+            stage = Stage.Load(this, SerializeHelper.LoadFromFile(path));
             statusLabel = new Label("");
             MainScene.CurrentGUI.Add(statusLabel);
+            MainScene.CurrentGUI.Add(stage.Visualizer);
         }
 
         protected override void UpdatePartInput()

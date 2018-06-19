@@ -5,6 +5,7 @@ namespace Gridly
 {
     public static class Inputs
     {
+        public static bool UIHandledMouse, MouseHoverUI;
         public static Vector2 MousePos => curMousePos;
         public static int ScrollWheelValue => curMouseState.ScrollWheelValue;
 

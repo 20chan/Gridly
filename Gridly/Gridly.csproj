@@ -81,6 +81,7 @@
     <Compile Include="UI\GUIManager.cs" />
     <Compile Include="UI\ISquareUI.cs" />
     <Compile Include="UI\Label.cs" />
+    <Compile Include="UI\TestCaseVisualizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

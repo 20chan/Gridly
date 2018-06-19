@@ -27,10 +27,13 @@ namespace Gridly.UI
         /// <summary>
         /// Returns if mouse event was handled
         /// </summary>
-        public bool HandleInput()
+        public bool HandleInput(out bool anyoneHovering)
         {
+            anyoneHovering = false;
             foreach (var ui in uis)
             {
+                if (ui.IsHovering(Inputs.MousePos))
+                    anyoneHovering = true;
                 if (ui.ProcessInput())
                     return true;
             }
