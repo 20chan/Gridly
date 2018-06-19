@@ -12,12 +12,15 @@ namespace Gridly
         bool started = false;
         string path;
         Label statusLabel;
+        Button runBtn;
         
         public StageEditor(string path)
         {
             this.path = path;
             stage = Stage.Load(this, SerializeHelper.LoadFromFile(path));
             statusLabel = new Label(20, 20, "");
+            runBtn = new Button(800, 20, 130, 60, "Run");
+            MainScene.CurrentGUI.Add(runBtn);
             MainScene.CurrentGUI.Add(statusLabel);
             MainScene.CurrentGUI.Add(stage.Visualizer);
         }
@@ -38,18 +41,20 @@ namespace Gridly
                             stage.SetOutputNeuron(n);
             }
 
-            if (IsKeyDown(Keys.F5))
+            if (IsKeyDown(Keys.F5) || runBtn.IsDown)
             {
                 if (!started)
                 {
                     started = true;
                     stage.Start();
                     statusLabel.Text = "Running..";
+                    runBtn.Text = "Stop";
                 }
                 else
                 {
                     started = false;
                     statusLabel.Text = "Stoped!";
+                    runBtn.Text = "Run";
                 }
             }
 
@@ -71,6 +76,7 @@ namespace Gridly
                 {
                     started = false;
                     statusLabel.Text = "Succeed!!";
+                    runBtn.Text = "Run";
                 }
             }
         }

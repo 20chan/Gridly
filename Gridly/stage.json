@@ -67,29 +67,38 @@
         2
     ],
     "TestCases": [
-        {
-            "input": [
-                [
-                    true,
-                    true,
-                    false,
-                    false
-                ],
-                [
-                    true,
-                    false,
-                    true,
-                    false
-                ]
-            ],
-            "output": [
-                [
-                    false,
-                    true,
-                    true,
-                    true
-                ]
-            ]
-        }
+      {
+        "input": [
+          [
+            true,
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            true,
+            false
+          ]
+        ],
+        "output": [
+          [
+            false,
+            true,
+            true,
+            true
+          ]
+        ]
+      },
+      {
+        "input": [
+          [ true, true, true, true, false, false, false, true ],
+          [ true, false, true, false, false, true, false, true ]
+        ],
+        "output": [
+          [ false, true, false, true, true, true, true, false]
+        ]
+      }
     ]
 }

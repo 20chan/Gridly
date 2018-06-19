@@ -21,6 +21,7 @@ namespace Gridly
         public TestCaseVisualizer Visualizer { get; private set; }
 
         int currentTestCase;
+        TestCase curCase => cases[currentTestCase];
 
         protected Stage(params TestCase[] testcases)
         {
@@ -43,19 +44,19 @@ namespace Gridly
         protected void Deserialize(StageEditor editor, JObject obj)
         {
             cases = obj["TestCases"].Select(t => TestCase.Deserialize(t)).ToArray();
-            inputLength = cases[0].Inputs[0].Length;
-            outputLength = cases[0].Outputs[0].Length;
+            inputLength = curCase.Inputs[0].Length;
+            outputLength = curCase.Outputs[0].Length;
             editor.DeserializeParts(JArray.FromObject(obj["Parts"]), out var orgIds, out var newIds);
             foreach (uint i in obj["Inputs"])
                 SetInputNeuron(editor.FromID(newIds[Array.IndexOf(orgIds, i)]) as BasicNeuron);
             foreach (uint i in obj["Outputs"])
                 SetOutputNeuron(editor.FromID(newIds[Array.IndexOf(orgIds, i)]) as BasicNeuron);
 
-            outputStack = new List<bool>[cases[0].Outputs.Length];
-            for (int i = 0; i < cases[0].Outputs.Length; i++)
+            outputStack = new List<bool>[curCase.Outputs.Length];
+            for (int i = 0; i < curCase.Outputs.Length; i++)
                 outputStack[i] = new List<bool>();
 
-            curTester = new Tester(cases[0]);
+            curTester = new Tester(curCase);
             Visualizer.Tester = curTester;
         }
 
@@ -70,10 +71,12 @@ namespace Gridly
             neuron.SetOutputNeuron(outputNeurons.Count);
             outputNeurons.Add(neuron);
         }
-        
-        public void Start()
+
+        public void Start(int index = 0)
         {
-            if (cases[0].Inputs.Length != inputNeurons.Count)
+            currentTestCase = index;
+
+            if (curCase.Inputs.Length != inputNeurons.Count)
             {
                 throw new Exception("입력 뉴런 개수가 다른디..");
             }
@@ -82,9 +85,11 @@ namespace Gridly
             elapsedTick = -1;
             foreach (var stack in outputStack)
                 stack.Clear();
-            // TODO: 테케 인덱스 설정
-            currentTestCase = 0;
             outputCheckIndex = 0;
+            inputLength = curCase.Inputs[0].Length;
+            outputLength = curCase.Outputs[0].Length;
+            curTester.TestCase = curCase;
+            curTester.Reset();
 
             Visualizer.Tester = curTester;
         }
@@ -120,8 +125,18 @@ namespace Gridly
                 curTester.CorcondanceCount = cnt;
                 if (cnt == outputLength)
                 {
-                    curTester.Succeed = true;
-                    Succeed = true;
+                    if (currentTestCase + 1 == cases.Length)
+                    {
+                        curTester.Succeed = true;
+                        Succeed = true;
+                    }
+                    else
+                    {
+                        currentTestCase++;
+                        Visualizer.UpdateUI();
+                        Start(currentTestCase);
+                        return;
+                    }
                 }
             }
             else
@@ -157,11 +172,11 @@ namespace Gridly
         public void Log()
         {
             Console.WriteLine($"Expected outputs:");
-            for (int i = 0; i < cases[0].Outputs.Length; i++)
-                Console.WriteLine($"{i}: {string.Join(",", cases[0].Outputs[i])}");
+            for (int i = 0; i < curCase.Outputs.Length; i++)
+                Console.WriteLine($"{i}: {string.Join(",", curCase.Outputs[i])}");
 
             Console.WriteLine($"Actual outputs stacks:");
-            for (int i = 0; i < cases[0].Outputs.Length; i++)
+            for (int i = 0; i < curCase.Outputs.Length; i++)
                 Console.WriteLine($"{i}: {string.Join(",", outputStack[i].Skip(outputCheckIndex))}");
             Console.WriteLine();
         }
