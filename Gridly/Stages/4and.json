@@ -1,0 +1,80 @@
+{
+  "Parts": [
+    {
+      "ID": 0,
+      "Type": 0,
+      "Activated": false,
+      "Position": {
+        "x": 272.5,
+        "y": 186.0
+      },
+      "Connecting": []
+    },
+    {
+      "ID": 1,
+      "Type": 0,
+      "Activated": false,
+      "Position": {
+        "x": 277.9332,
+        "y": 253.275833
+      },
+      "Connecting": []
+    },
+    {
+      "ID": 2,
+      "Type": 0,
+      "Activated": false,
+      "Position": {
+        "x": 276.797058,
+        "y": 315.5671
+      },
+      "Connecting": []
+    },
+    {
+      "ID": 3,
+      "Type": 0,
+      "Activated": false,
+      "Position": {
+        "x": 298.0,
+        "y": 379.5
+      },
+      "Connecting": []
+    },
+    {
+      "ID": 4,
+      "Type": 0,
+      "Activated": false,
+      "Position": {
+        "x": 539.12854,
+        "y": 268.401642
+      },
+      "Connecting": []
+    }
+  ],
+  "Inputs": [ 0, 1, 2, 3 ],
+  "Outputs": [ 4 ],
+  "TestCases": [
+    {
+      "input": [
+        [ true, true, true, true, false, false, false, false ],
+        [ true, true, false, false, true, true, false, false ],
+        [ true, false, true, false, true, false, true, false ],
+        [ true, false, true, false, true, false, true, false ]
+      ],
+      "output": [
+        [ true, false, false, false, false, false, false, false ]
+      ]
+    },
+    {
+      "input": [
+        [ true, false, true, true, true, true, true, true ],
+        [ true, true, true, false, true, true, true, true ],
+        [ true, true, true, true, true, false, true, true ],
+        [ true, true, true, true, true, true, true, false ]
+      ],
+      "output": [
+        [ true, false, true, false, true, false, true, false ]
+      ]
+    }
+  ]
+}

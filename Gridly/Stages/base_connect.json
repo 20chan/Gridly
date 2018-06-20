@@ -1,0 +1,40 @@
+{
+  "Parts": [
+    {
+      "ID": 0,
+      "Type": 0,
+      "Activated": false,
+      "Position": {
+        "x": 333.260925,
+        "y": 241.856232
+      },
+      "Connecting": []
+    },
+    {
+      "ID": 1,
+      "Type": 0,
+      "Activated": false,
+      "Position": {
+        "x": 531.709961,
+        "y": 241.3258
+      },
+      "Connecting": []
+    }
+  ],
+  "Inputs": [ 0 ],
+  "Outputs": [ 1 ],
+  "TestCases": [
+    {
+      "input": [ [ true, true, true, true, false, false, false, false ] ],
+      "output": [ [ true, true, true, true, false, false, false, false ] ]
+    },
+    {
+      "input": [ [ true, false, true, false, true, false, true, false ] ],
+      "output": [ [ true, false, true, false, true, false, true, false ] ]
+    },
+    {
+      "input": [ [ true, false, true, true, false, false, false ] ],
+      "output": [ [ true, false, true, true, false, false, false ] ]
+    }
+  ]
+}
