@@ -22,11 +22,14 @@ namespace Gridly
         Matrix scale;
         Scene curScene;
         GUIManager guiManager;
+
+        static MainScene mainScene;
         
         public MainScene()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            mainScene = this;
         }
 
         protected override void Initialize()
@@ -57,7 +60,8 @@ namespace Gridly
             Resources.EdgeTexture = Content.Load<Texture2D>("Img/edge");
             Resources.DefaultFont = Content.Load<SpriteFont>("defaultFont");
 
-            LoadScene(new StageEditor(@"Stages\and_or.json"));
+            // LoadScene(new StageEditor(@"Stages\and_or.json"));
+            LoadScene(new StageSelector());
         }
 
         protected override void UnloadContent()
@@ -73,7 +77,6 @@ namespace Gridly
             isUIHandledInput = guiManager.HandleInput(out var anyUIHovering);
             Inputs.UIHandledMouse = isUIHandledInput;
             Inputs.MouseHoverUI = anyUIHovering;
-            UpdateUIEvent();
             if (!paused)
             {
                 curScene.Update();
@@ -98,16 +101,11 @@ namespace Gridly
             base.Draw(gameTime);
         }
 
-        private void UpdateUIEvent()
+        public static void LoadScene(Scene scene)
         {
-
-        }
-
-        private void LoadScene(Scene scene)
-        {
-            curScene?.OnUnload();
+            mainScene.curScene?.OnUnload();
             scene.OnLoad();
-            curScene = scene;
+            mainScene.curScene = scene;
         }
     }
 }
