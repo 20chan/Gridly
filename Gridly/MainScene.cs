@@ -105,8 +105,8 @@ namespace Gridly
 
         private void LoadScene(Scene scene)
         {
-            curScene?.Unload();
-            scene.Load();
+            curScene?.OnUnload();
+            scene.OnLoad();
             curScene = scene;
         }
     }

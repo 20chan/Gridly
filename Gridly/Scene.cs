@@ -10,12 +10,12 @@ namespace Gridly
         public abstract void Update();
         public abstract void Draw(SpriteBatch sb);
 
-        public virtual void Load()
+        public virtual void OnLoad()
         {
             MainScene.CurrentGUI.Attach(SceneGUI);
         }
 
-        public virtual void Unload()
+        public virtual void OnUnload()
         {
             MainScene.CurrentGUI.Dettach(SceneGUI);
         }
