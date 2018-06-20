@@ -13,16 +13,28 @@ namespace Gridly
         string path;
         Label statusLabel;
         Button runBtn;
+
+        public StageEditor() : base()
+        {
+            statusLabel = new Label(20, 20, "");
+            runBtn = new Button(800, 20, 130, 60, "Run");
+            SceneGUI.Add(runBtn);
+            SceneGUI.Add(statusLabel);
+            stage = Stage.New(this);
+
+            int i = 0;
+            for (; ; i++)
+                if (!System.IO.File.Exists($@"Stages\{i}.json"))
+                    break;
+
+            path = $@"Stages\{i}.json";
+        }
         
-        public StageEditor(string path)
+        public StageEditor(string path) : this()
         {
             this.path = path;
             stage = Stage.Load(this, SerializeHelper.LoadFromFile(path));
-            statusLabel = new Label(20, 20, "");
-            runBtn = new Button(800, 20, 130, 60, "Run");
-            MainScene.CurrentGUI.Add(runBtn);
-            MainScene.CurrentGUI.Add(statusLabel);
-            MainScene.CurrentGUI.Add(stage.Visualizer);
+            SceneGUI.Add(stage.Visualizer);
         }
 
         protected override void UpdatePartInput()

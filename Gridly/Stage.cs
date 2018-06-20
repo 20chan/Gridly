@@ -187,5 +187,11 @@ namespace Gridly
             stage.Deserialize(editor, obj);
             return stage;
         }
+
+        public static Stage New(StageEditor editor)
+        {
+            var stage = new Stage();
+            return stage;
+        }
     }
 }

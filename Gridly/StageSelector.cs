@@ -1,12 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Gridly.UI;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Gridly
 {
-    public class StageSelector
+    public class StageSelector : Scene
     {
+        public override void Draw(SpriteBatch sb)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Update()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

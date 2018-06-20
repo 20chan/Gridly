@@ -20,7 +20,7 @@ namespace Gridly
         bool paused;
         bool isUIHandledInput;
         Matrix scale;
-        IScene curScene;
+        Scene curScene;
         GUIManager guiManager;
         
         public MainScene()
@@ -57,7 +57,7 @@ namespace Gridly
             Resources.EdgeTexture = Content.Load<Texture2D>("Img/edge");
             Resources.DefaultFont = Content.Load<SpriteFont>("defaultFont");
 
-            curScene = new StageEditor("stage.json");
+            LoadScene(new StageEditor(@"Stages\and_or.json"));
         }
 
         protected override void UnloadContent()
@@ -101,6 +101,13 @@ namespace Gridly
         private void UpdateUIEvent()
         {
 
+        }
+
+        private void LoadScene(Scene scene)
+        {
+            curScene?.Unload();
+            scene.Load();
+            curScene = scene;
         }
     }
 }

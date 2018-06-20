@@ -53,7 +53,7 @@
     <Compile Include="IConnectable.cs" />
     <Compile Include="INeedInput.cs" />
     <Compile Include="Inputs.cs" />
-    <Compile Include="IScene.cs" />
+    <Compile Include="Scene.cs" />
     <Compile Include="Neuron.cs" />
     <Compile Include="Part.cs" />
     <Compile Include="PartEditor.cs" />
@@ -104,7 +104,19 @@
     <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="app.manifest" />
     <None Include="packages.config" />
-    <None Include="stage.json">
+    <None Include="Stages\4and.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Stages\and_or.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Stages\base_connect.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Stages\nand.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Stages\twisted.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

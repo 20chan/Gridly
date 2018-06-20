@@ -9,12 +9,14 @@ using Newtonsoft.Json.Linq;
 
 using static Gridly.Inputs;
 using System;
+using Gridly.UI;
 
 namespace Gridly
 {
-    public abstract class PartEditor : IScene
+    public abstract class PartEditor : Scene
     {
         public bool Enabled { get; set; }
+
         protected List<Part> parts;
         private TileMap tilemap;
         EditorState state;
@@ -45,7 +47,7 @@ namespace Gridly
             selectedParts = new List<Part>();
         }
 
-        public void Update()
+        public override void Update()
         {
             UpdateTick();
             UpdatePartInput();
@@ -142,7 +144,7 @@ namespace Gridly
                 n.UpdateState();
         }
 
-        public void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb)
         {
             foreach (var n in parts)
                 n.DrawBack(sb);
