@@ -17,7 +17,10 @@ namespace Gridly
         public StageEditor() : base()
         {
             statusLabel = new Label(20, 20, "");
-            runBtn = new Button(800, 20, 130, 60, "Run");
+            runBtn = new Button(800, 20, 130, 60, "Run")
+            {
+                ClickStyle = ClickStyle.Popup
+            };
             SceneGUI.Add(runBtn);
             SceneGUI.Add(statusLabel);
             stage = Stage.New(this);

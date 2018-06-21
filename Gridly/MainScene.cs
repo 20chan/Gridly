@@ -12,6 +12,7 @@ namespace Gridly
         public static GUIManager CurrentGUI;
         public static readonly int Width = 1920 / 2;
         public static readonly int Height = 1080 / 2;
+        public static readonly Rectangle Bound = new Rectangle(0, 0, Width, Height);
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -72,13 +73,16 @@ namespace Gridly
         protected override void Update(GameTime gameTime)
         {
             Inputs.Update();
-            Times.Update(gameTime);
-
-            isUIHandledInput = guiManager.HandleInput(out var anyUIHovering);
-            Inputs.UIHandledMouse = isUIHandledInput;
-            Inputs.MouseHoverUI = anyUIHovering;
+            if (!IsActive)
+                paused = true;
             if (!paused)
             {
+                Times.Update(gameTime);
+
+                isUIHandledInput = guiManager.HandleInput(out var anyUIHovering);
+                Inputs.UIHandledMouse = isUIHandledInput;
+                Inputs.MouseHoverUI = anyUIHovering;
+
                 curScene.Update();
             }
             if (Inputs.IsKeyDown(Keys.Tab))
@@ -93,9 +97,15 @@ namespace Gridly
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin(transformMatrix: scale);
-
+            
             curScene.Draw(spriteBatch);
             guiManager.DrawUI(spriteBatch);
+
+            if (paused)
+            {
+                spriteBatch.FillRectangle(Bound, new Color(Color.Black, 0.7f));
+                spriteBatch.DrawString(Resources.DefaultFont, "PAUSED", Alignment.Center, Bound, Color.White, 0);
+            }
 
             spriteBatch.End();
             base.Draw(gameTime);
