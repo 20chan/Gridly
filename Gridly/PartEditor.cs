@@ -382,10 +382,12 @@ namespace Gridly
 
         protected void CloseEditor()
         {
-            if (state == EditorState.IDEAL)
+            if (state == EditorState.IDEAL && parentEditor != null)
             {
-                parentEditor?.AboveClosed();
+                parentEditor.AboveClosed();
             }
+            else
+                MainScene.LoadScene(new StageSelector());
         }
 
         protected void AboveClosed()

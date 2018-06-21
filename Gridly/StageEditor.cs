@@ -39,8 +39,6 @@ namespace Gridly
 
         protected override void UpdatePartInput()
         {
-            if (IsKeyDown(Keys.Escape))
-                MainScene.LoadScene(new StageSelector());
             if (!started)
             {
                 base.UpdatePartInput();
