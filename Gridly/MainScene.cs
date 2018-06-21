@@ -94,7 +94,7 @@ namespace Gridly
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(new Color(133, 182, 203));
 
             spriteBatch.Begin(transformMatrix: scale);
             

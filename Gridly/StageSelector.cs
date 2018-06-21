@@ -9,6 +9,7 @@ namespace Gridly
     public class StageSelector : Scene
     {
         Button[] btns;
+        Button editorBtn;
         public StageSelector() : base()
         {
             int init_x = 30, init_y = 40;
@@ -29,8 +30,14 @@ namespace Gridly
                 };
                 SceneGUI.Add(b);
                 btns[i++] = b;
-                init_y += 80 + gap_y;
             }
+            iter.MoveNext();
+            var c = iter.Current;
+            editorBtn = new Button(c.X, c.Y, width, height, "+")
+            {
+                ClickStyle = ClickStyle.Popup
+            };
+            SceneGUI.Add(editorBtn);
 
             IEnumerator<Point> CoordIter()
             {
@@ -50,6 +57,11 @@ namespace Gridly
                 {
                     MainScene.LoadScene(new StageEditor($@"Stages\{b.Text}.json"));
                 }
+            }
+
+            if (editorBtn.IsDown)
+            {
+                MainScene.LoadScene(new StageEditor());
             }
         }
 
